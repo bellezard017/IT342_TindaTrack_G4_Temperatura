@@ -1,0 +1,1 @@
+# IT342_TindaTrack_G4_Temperatura
