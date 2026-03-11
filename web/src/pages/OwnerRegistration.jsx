@@ -37,11 +37,24 @@ export default function OwnerRegistration() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const validatePassword = (password) => {
+    const minLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[@$!%*?&]/.test(password);
+
+    return minLength && hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar;
+  };
+
   const validate = () => {
     if (!form.name.trim())        return 'Full name is required.';
     if (!form.email.trim())       return 'Email is required.';
     if (!/\S+@\S+\.\S+/.test(form.email)) return 'Enter a valid email address.';
     if (form.password.length < 8) return 'Password must be at least 8 characters.';
+    if (!validatePassword(form.password)) {
+      return 'Password must contain: uppercase (A-Z), lowercase (a-z), numbers (0-9), and special characters (!@#$%^&*)';
+    }
     if (form.password !== form.confirmPassword) return 'Passwords do not match.';
     if (!form.storeName.trim())   return 'Store name is required.';
     return null;
