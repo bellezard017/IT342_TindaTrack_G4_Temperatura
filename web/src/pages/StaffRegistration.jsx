@@ -41,25 +41,23 @@ export default function StaffRegistration() {
   };
 
   const validatePassword = (password) => {
-    const minLength = password.length >= 8;
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumbers = /\d/.test(password);
-    const hasSpecialChar = /[@$!%*?&]/.test(password);
-
-    return minLength && hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar;
+    return (
+      password.length >= 8 &&
+      /[A-Z]/.test(password) &&
+      /[a-z]/.test(password) &&
+      /\d/.test(password) &&
+      /[@$!%*?&]/.test(password)
+    );
   };
 
   const validate = () => {
-    if (!form.name.trim())        return 'Full name is required.';
-    if (!form.email.trim())       return 'Email is required.';
-    if (!/\S+@\S+\.\S+/.test(form.email)) return 'Enter a valid email address.';
-    if (form.password.length < 8) return 'Password must be at least 8 characters.';
-    if (!validatePassword(form.password)) {
-      return 'Password must contain: uppercase (A-Z), lowercase (a-z), numbers (0-9), and special characters (!@#$%^&*)';
-    }
-    if (form.password !== form.confirmPassword) return 'Passwords do not match.';
-    if (!form.storeCode.trim())   return 'Store code is required.';
+    if (!form.name.trim())                        return 'Full name is required.';
+    if (!form.email.trim())                       return 'Email is required.';
+    if (!/\S+@\S+\.\S+/.test(form.email))         return 'Enter a valid email address.';
+    if (form.password.length < 8)                 return 'Password must be at least 8 characters.';
+    if (!validatePassword(form.password))         return 'Password must contain: uppercase (A-Z), lowercase (a-z), numbers (0-9), and special characters (!@#$%^&*)';
+    if (form.password !== form.confirmPassword)   return 'Passwords do not match.';
+    if (!form.storeCode.trim())                   return 'Store code is required.';
     return null;
   };
 
@@ -70,7 +68,6 @@ export default function StaffRegistration() {
 
     setLoading(true);
     setError('');
-
     try {
       const data = await registerApi.registerStaff({
         name:            form.name,
@@ -79,30 +76,30 @@ export default function StaffRegistration() {
         confirmPassword: form.confirmPassword,
         storeCode:       form.storeCode.trim().toUpperCase(),
       });
-
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       navigate('/dashboard');
     } catch (err) {
-      const msg =
+      setError(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Registration failed. Please check your store code and try again.';
-      setError(msg);
+        'Registration failed. Please check your store code and try again.'
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  // Save intent so Dashboard knows to redirect to setup-staff after OAuth
   const handleGoogleSignup = () => {
-    window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'https://api.tindatrack.com/api'}/auth/oauth/google`;
+    sessionStorage.setItem('oauth_intent', 'staff');
+    window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/auth/oauth/google/login`;
   };
 
   return (
     <div className="reg-form-page">
       <div className="reg-form-card">
 
-        {/* Logo */}
         <div className="reg-form-logo">
           <UsersIcon />
         </div>
@@ -116,64 +113,45 @@ export default function StaffRegistration() {
           <div className="field">
             <label htmlFor="name">Full Name</label>
             <input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Maria Santos"
-              autoComplete="name"
-              value={form.name}
-              onChange={handleChange}
+              id="name" name="name" type="text"
+              placeholder="Maria Santos" autoComplete="name"
+              value={form.name} onChange={handleChange}
             />
           </div>
 
           <div className="field">
             <label htmlFor="email">Email</label>
             <input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="your@email.com"
-              autoComplete="email"
-              value={form.email}
-              onChange={handleChange}
+              id="email" name="email" type="email"
+              placeholder="your@email.com" autoComplete="email"
+              value={form.email} onChange={handleChange}
             />
           </div>
 
           <div className="field">
             <label htmlFor="password">Password</label>
             <input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              autoComplete="new-password"
-              value={form.password}
-              onChange={handleChange}
+              id="password" name="password" type="password"
+              placeholder="••••••••" autoComplete="new-password"
+              value={form.password} onChange={handleChange}
             />
           </div>
 
           <div className="field">
             <label htmlFor="confirmPassword">Confirm Password</label>
             <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              placeholder="••••••••"
-              autoComplete="new-password"
-              value={form.confirmPassword}
-              onChange={handleChange}
+              id="confirmPassword" name="confirmPassword" type="password"
+              placeholder="••••••••" autoComplete="new-password"
+              value={form.confirmPassword} onChange={handleChange}
             />
           </div>
 
           <div className="field">
             <label htmlFor="storeCode">Store Code</label>
             <input
-              id="storeCode"
-              name="storeCode"
-              type="text"
+              id="storeCode" name="storeCode" type="text"
               placeholder="Enter store code from owner"
-              value={form.storeCode}
-              onChange={handleChange}
+              value={form.storeCode} onChange={handleChange}
               style={{ textTransform: 'uppercase', letterSpacing: '1px' }}
             />
             <p className="field-hint">Ask your store owner for the store code</p>
