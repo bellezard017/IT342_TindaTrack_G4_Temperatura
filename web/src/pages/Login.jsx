@@ -98,8 +98,9 @@ export default function Login() {
     }
   };
 
+  // Matches backend: GET /api/auth/oauth/google/login
   const handleGoogleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'https://api.tindatrack.com/api'}/auth/oauth/google`;
+    window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/auth/oauth/google/login`;
   };
 
   return (
