@@ -62,22 +62,15 @@ const PlusIcon = () => (
 );
 
 /* Placeholder data */
-const PLACEHOLDER = [
-  { id: 1, date: 'Feb 28, 2026', time: '10:30 AM', name: 'Coca-Cola 1.5L',        category: 'Beverages',      quantity: 5,  price: 65,   total: 325  },
-  { id: 2, date: 'Feb 28, 2026', time: '11:15 AM', name: 'Lucky Me Pancit Canton', category: 'Instant Noodles',quantity: 10, price: 15,   total: 150  },
-  { id: 3, date: 'Feb 28, 2026', time: '12:00 PM', name: 'Marlboro Red',           category: 'Cigarettes',     quantity: 3,  price: 150,  total: 450  },
-  { id: 4, date: 'Feb 28, 2026', time: '1:20 PM',  name: 'Century Tuna',           category: 'Canned Goods',   quantity: 8,  price: 45,   total: 360  },
-  { id: 5, date: 'Feb 27, 2026', time: '9:45 AM',  name: 'Alaska Condensada',      category: 'Condiments',     quantity: 4,  price: 55,   total: 220  },
-];
 
 export default function SalesRecords() {
   const navigate  = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
   const [search, setSearch]     = useState('');
   const [category, setCategory] = useState('All Categories');
-  const [records, setRecords]   = useState(PLACEHOLDER);
+  const [records, setRecords]   = useState([]);
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState('');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   useEffect(() => {
     const fetchSales = async () => {
@@ -87,7 +80,8 @@ export default function SalesRecords() {
         const data = await saleApi.getSales();
         if (data?.length) setRecords(data);
       } catch {
-        // keep placeholder data
+        setRecords([]);
+        setError('Unable to load sales records. Please refresh the page.');
       } finally {
         setLoading(false);
       }
@@ -101,8 +95,74 @@ export default function SalesRecords() {
     return matchCat && matchSearch;
   }), [records, search, category]);
 
+  let salesContent;
+  if (loading) {
+    salesContent = <div className="sr-empty">Loading sales…</div>;
+  } else if (error) {
+    salesContent = <div className="error-banner">{error}</div>;
+  } else if (filtered.length === 0) {
+    salesContent = <div className="sr-empty">No sales records found.</div>;
+  } else {
+    salesContent = (
+      <div className="sr-table-wrap">
+        <table className="sr-table">
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>Item Name</th>
+              <th>Category</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th>Total</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((r) => {
+              const badge = CATEGORY_COLORS[r.category] || CATEGORY_COLORS['Other'];
+              return (
+                <tr key={r.id}>
+                  <td className="sr-date-cell">
+                    <span className="sr-date">{r.date}</span>
+                    <span className="sr-time">{r.time}</span>
+                  </td>
+                  <td className="sr-name">{r.name}</td>
+                  <td>
+                    <span className="sr-badge"
+                      style={{ background: badge.bg, color: badge.color }}>
+                      {r.category}
+                    </span>
+                  </td>
+                  <td className="sr-num">{r.quantity}</td>
+                  <td className="sr-num">₱{Number(r.price).toFixed(2)}</td>
+                  <td className="sr-total">₱{Number(r.total).toFixed(2)}</td>
+                  <td>
+                    <div className="sr-actions">
+                      <button className="sr-btn-edit"
+                        onClick={() => navigate(`/edit-sale/${r.id}`)}
+                        title="Edit">
+                        <EditIcon />
+                      </button>
+                      {user?.role === 'OWNER' && (
+                        <button className="sr-btn-delete"
+                          onClick={() => handleDelete(r.id)}
+                          title="Delete">
+                          <DeleteIcon />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this sale record?')) return;
+    if (!globalThis.confirm('Delete this sale record?')) return;
     try {
       await saleApi.deleteSale(id);
       setRecords((prev) => prev.filter((r) => r.id !== id));
@@ -146,67 +206,7 @@ export default function SalesRecords() {
         </div>
 
         {/* Table */}
-        {loading ? (
-          <div className="sr-empty">Loading sales…</div>
-        ) : error ? (
-          <div className="error-banner">{error}</div>
-        ) : filtered.length === 0 ? (
-          <div className="sr-empty">No sales records found.</div>
-        ) : (
-          <div className="sr-table-wrap">
-            <table className="sr-table">
-              <thead>
-                <tr>
-                  <th>Date & Time</th>
-                  <th>Item Name</th>
-                  <th>Category</th>
-                  <th>Quantity</th>
-                  <th>Price</th>
-                  <th>Total</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((r) => {
-                  const badge = CATEGORY_COLORS[r.category] || CATEGORY_COLORS['Other'];
-                  return (
-                    <tr key={r.id}>
-                      <td className="sr-date-cell">
-                        <span className="sr-date">{r.date || `${r.date} ${r.time}`}</span>
-                      </td>
-                      <td className="sr-name">{r.name}</td>
-                      <td>
-                        <span className="sr-badge"
-                          style={{ background: badge.bg, color: badge.color }}>
-                          {r.category}
-                        </span>
-                      </td>
-                      <td className="sr-num">{r.quantity}</td>
-                      <td className="sr-num">₱{Number(r.price).toFixed(2)}</td>
-                      <td className="sr-total">₱{Number(r.total).toFixed(2)}</td>
-                      <td>
-                        <div className="sr-actions">
-                          <button className="sr-btn-edit"
-                            onClick={() => navigate(`/edit-sale/${r.id}`)}
-                            title="Edit">
-                            <EditIcon />
-                          </button>
-                          {user?.role !== 'STAFF' && (
-                            <button className="sr-btn-delete"
-                              onClick={() => handleDelete(r.id)}
-                              title="Delete">
-                              <DeleteIcon />
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+        {salesContent}
       </div>
     </SidebarLayout>
   );
