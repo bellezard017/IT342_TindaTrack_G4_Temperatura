@@ -3,6 +3,7 @@ package com.tindatrack.backend.controller;
 import com.tindatrack.backend.dto.DashboardResponse;
 import com.tindatrack.backend.dto.SaleRequest;
 import com.tindatrack.backend.dto.SaleResponse;
+import com.tindatrack.backend.model.Sale;
 import com.tindatrack.backend.model.User;
 import com.tindatrack.backend.repository.UserRepository;
 import com.tindatrack.backend.service.SaleService;
@@ -49,12 +50,48 @@ public class SaleController {
         return ResponseEntity.ok(responses);
     }
 
+    @GetMapping("/sales/{id}")
+    public ResponseEntity<SaleResponse> getSaleById(@PathVariable Long id, Authentication authentication) {
+        User user = getAuthenticatedUser(authentication);
+        Sale sale = saleService.getSaleById(id);
+        if (!sale.getStoreId().equals(user.getStoreId())) {
+            return ResponseEntity.status(403).build();
+        }
+        return ResponseEntity.ok(saleService.mapToResponse(sale));
+    }
+
+    @PutMapping("/sales/{id}")
+    public ResponseEntity<SaleResponse> updateSale(@PathVariable Long id,
+                                                   @Valid @RequestBody SaleRequest request,
+                                                   Authentication authentication) {
+        User user = getAuthenticatedUser(authentication);
+        Sale sale = saleService.getSaleById(id);
+        if (!sale.getStoreId().equals(user.getStoreId())) {
+            return ResponseEntity.status(403).build();
+        }
+        Sale updatedSale = saleService.updateSale(id, request);
+        return ResponseEntity.ok(saleService.mapToResponse(updatedSale));
+    }
+
     @GetMapping("/dashboard")
     public ResponseEntity<DashboardResponse> getDashboard(Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
         storeService.enrichUserStore(user);
         DashboardResponse dashboard = saleService.getDashboardForStore(user.getStoreId());
         return ResponseEntity.ok(dashboard);
+    }
+
+    @DeleteMapping("/sales/{id}")
+    public ResponseEntity<Void> deleteSale(@PathVariable Long id, Authentication authentication) {
+        User user = getAuthenticatedUser(authentication);
+
+        // Only OWNER role can delete sales
+        if (!"OWNER".equalsIgnoreCase(user.getRole())) {
+            return ResponseEntity.status(403).build();
+        }
+
+        saleService.deleteSale(id);
+        return ResponseEntity.noContent().build();
     }
 
     private User getAuthenticatedUser(Authentication authentication) {
