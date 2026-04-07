@@ -48,16 +48,16 @@ export default function AddSale() {
 
     setLoading(true);
     try {
-      await saleApi.createSale({
+      await saleApi.addSale({
         name:     form.name,
         category: form.category,
         quantity: Number(form.quantity),
         price:    parseFloat(form.price),
+        total:    parseFloat(form.quantity) * parseFloat(form.price),
       });
       navigate('/sales');
-    } catch (err) {
+    } catch {
       setError('Failed to save sale. Please try again.');
-      console.error('Sale creation error:', err);
     } finally {
       setLoading(false);
     }
