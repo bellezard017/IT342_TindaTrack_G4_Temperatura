@@ -31,6 +31,11 @@ export const authApi = {
     return data;
   },
 
+  removeAvatar: async () => {
+    const { data } = await axiosInstance.delete('/user/avatar');
+    return data;
+  },
+
   // Update phone and/or address
   updateProfile: async (payload) => {
     const { data } = await axiosInstance.put('/user/profile', payload);
