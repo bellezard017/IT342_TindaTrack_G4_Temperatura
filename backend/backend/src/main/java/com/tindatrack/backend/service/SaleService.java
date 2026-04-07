@@ -23,22 +23,22 @@ public class SaleService {
 
     private final SaleRepository saleRepository;
 
-    // ✅ Observer Pattern: list of observers
+    // Observer Pattern: list of observers
     private List<SaleObserver> observers = new ArrayList<>();
 
     public SaleService(SaleRepository saleRepository) {
         this.saleRepository = saleRepository;
 
-        // ✅ Register observer
+        // Register observer
         this.addObserver(new SaleNotificationService());
     }
 
-    // ✅ Add observer
+    // Add observer
     public void addObserver(SaleObserver observer) {
         observers.add(observer);
     }
 
-    // ✅ Notify observers
+    // Notify observers
     private void notifyObservers(Sale sale) {
         for (SaleObserver observer : observers) {
             observer.update(sale);
@@ -50,17 +50,17 @@ public class SaleService {
             throw new RuntimeException("Your account must be connected to a store before recording sales.");
         }
 
-        // ✅ Singleton Pattern usage
+        // Singleton Pattern usage
         String systemName = ConfigManager.getInstance().getSystemName();
         System.out.println(systemName);
 
-        // ✅ Factory Pattern usage
+        // Factory Pattern usage
         Sale sale = SaleFactory.createSale(user, request);
 
         // Save sale
         Sale savedSale = saleRepository.save(sale);
 
-        // ✅ Observer Pattern trigger
+        // Observer Pattern trigger
         notifyObservers(savedSale);
 
         return savedSale;
