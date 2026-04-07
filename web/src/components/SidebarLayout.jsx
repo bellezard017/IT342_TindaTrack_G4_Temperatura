@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { authApi } from '../api/authApi';
 import '../styles/dashboard.css';
 
 const StoreIcon = () => (
@@ -65,23 +67,27 @@ const NAV_ITEMS = [
 export default function SidebarLayout({ children, pageTitle, subtitle, actionLabel, actionOnClick }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user') || '{}'));
   const activePath = location.pathname;
+
+  useEffect(() => {
+    const refreshUser = async () => {
+      try {
+        const freshUser = await authApi.getMe();
+        setUser(freshUser);
+        localStorage.setItem('user', JSON.stringify(freshUser));
+      } catch {
+        // keep the existing cached profile if refresh fails
+      }
+    };
+    refreshUser();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/login');
   };
-
-  // Filter nav items based on user role
-  const visibleNavItems = NAV_ITEMS.filter((item) => {
-    // Hide store management for staff
-    if (item.key === 'store-management' && user?.role === 'STAFF') {
-      return false;
-    }
-    return true;
-  });
 
   return (
     <div className="dashboard-page">
@@ -99,7 +105,7 @@ export default function SidebarLayout({ children, pageTitle, subtitle, actionLab
         </div>
 
         <nav className="sidebar-nav">
-          {visibleNavItems.map((item) => (
+          {NAV_ITEMS.filter(item => item.key !== 'store-management' || user?.role === 'OWNER').map((item) => (
             <Link
               key={item.key}
               to={item.path}
