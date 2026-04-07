@@ -37,4 +37,13 @@ public class User {
 
     @Transient
     private String storeCode;
+
+    @Column(length = 255)
+    private String phone;
+
+    @Column(length = 255)
+    private String address;
+
+    @Column(columnDefinition = "TEXT")
+    private String avatarUrl;
 }
