@@ -1,5 +1,6 @@
 package com.tindatrack.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,9 +23,18 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @JsonIgnore
     private String password;
 
     private String role;
 
+    private Long storeId;
+
     private LocalDateTime createdAt;
+
+    @Transient
+    private String storeName;
+
+    @Transient
+    private String storeCode;
 }

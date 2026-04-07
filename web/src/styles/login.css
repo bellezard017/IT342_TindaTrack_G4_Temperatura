@@ -65,16 +65,16 @@
 .logo-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   position: relative;
   z-index: 1;
   margin-bottom: 0;
 }
 
 .logo-icon {
-  width: 56px; height: 56px;
+  width: 68px; height: 68px;
   background: rgba(255,255,255,0.25);
-  border-radius: 16px;
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -82,10 +82,10 @@
 }
 
 .logo-name {
-  font-size: 30px;
+  font-size: 42px;
   font-weight: 800;
   color: #fff;
-  letter-spacing: -0.5px;
+  letter-spacing: -1px;
 }
 
 /* ── Hero + features wrapper: pushed to vertical center ── */
@@ -110,7 +110,7 @@
 .feature-list {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
 }
 
 .feature-item {
@@ -120,8 +120,8 @@
 }
 
 .feature-icon {
-  width: 48px; height: 48px;
-  background: rgba(255,255,255,0.18);
+  width: 50px; height: 50px;
+  background: rgba(255,255,255,0.22);
   border-radius: 13px;
   flex-shrink: 0;
   display: flex;
@@ -132,15 +132,15 @@
 .feature-text strong {
   display: block;
   color: #fff;
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 19px;
+  font-weight: 800;
   margin-bottom: 5px;
 }
 
 .feature-text span {
-  color: rgba(255,255,255,0.72);
-  font-size: 14px;
-  line-height: 1.55;
+  color: rgba(255,255,255,0.92);
+  font-size: 15px;
+  line-height: 1.65;
 }
 
 /* ════════════════════════════
@@ -178,7 +178,7 @@
 
 .login-card .sub {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 15px;
   margin-bottom: 32px;
   text-align: center;
 }
@@ -212,7 +212,7 @@
   border-radius: 10px;
   background: var(--input-bg);
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
@@ -231,6 +231,33 @@
   box-shadow: 0 0 0 3px rgba(224,95,95,0.12);
 }
 
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-input-wrapper input {
+  padding-right: 52px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #6b6b6b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+
+.password-toggle:hover {
+  color: #E07A5F;
+}
+
 /* ── Login button ── */
 .btn-login {
   width: 100%;
@@ -241,7 +268,7 @@
   border-radius: 10px;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   margin-top: 4px;
   display: flex;
@@ -272,7 +299,7 @@
 .divider {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   margin: 22px 0;
   color: var(--muted);
   font-size: 13px;
@@ -294,7 +321,7 @@
   border-radius: 10px;
   background: #fff;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text);
   cursor: pointer;
@@ -320,7 +347,7 @@
 
 .register-link a {
   color: var(--coral);
-  font-weight: 700;
+  font-weight: 800;
   text-decoration: none;
 }
 

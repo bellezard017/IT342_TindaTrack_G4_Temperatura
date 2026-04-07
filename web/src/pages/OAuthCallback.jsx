@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // Get URL parameters
@@ -24,7 +25,7 @@ export default function OAuthCallback() {
     }
 
     try {
-      // Store token and user info in localStorage
+      // Store token in localStorage
       localStorage.setItem('token', token);
       
       // Fetch user info from API
@@ -36,14 +37,24 @@ export default function OAuthCallback() {
       .then(res => res.json())
       .then(user => {
         localStorage.setItem('user', JSON.stringify(user));
-        // Redirect to dashboard
-        navigate('/dashboard');
+        
+        // Check if user needs to set up a store
+        if (user.role === 'OWNER' && (!user.storeId || user.storeId === 0)) {
+          // Redirect to store setup
+          navigate('/setup-store');
+        } else if (!user.storeId || user.storeId === 0) {
+          // Redirect to staff setup
+          navigate('/setup-staff');
+        } else {
+          // Redirect to dashboard
+          navigate('/dashboard');
+        }
       })
       .catch(err => {
         console.error('Failed to fetch user info:', err);
-        // Still redirect as token is valid
-        localStorage.setItem('user', JSON.stringify({ name: userName }));
-        navigate('/dashboard');
+        // Still save basic user info and redirect
+        localStorage.setItem('user', JSON.stringify({ name: userName, role: 'OWNER' }));
+        navigate('/setup-store');
       });
     } catch (err) {
       console.error('OAuth callback error:', err);

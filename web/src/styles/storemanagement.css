@@ -1,0 +1,258 @@
+/* ════════════════════════════════
+   STORE MANAGEMENT PAGE
+════════════════════════════════ */
+
+.sm-loading {
+  color: #aaa;
+  font-size: 15px;
+  padding: 40px 0;
+  text-align: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── Card ── */
+.sm-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Section header (icon + title + optional button) ── */
+.sm-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.sm-section-icon {
+  width: 36px;
+  height: 36px;
+  background: #FDE8E3;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sm-section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #2D2D2D;
+  margin: 0;
+  flex: 1;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sm-view-all-btn {
+  background: transparent;
+  border: 1.5px solid #E8E3D8;
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.sm-view-all-btn:hover {
+  border-color: #E07A5F;
+  color: #E07A5F;
+  background: #FDE8E3;
+}
+
+.sm-divider {
+  height: 1px;
+  background: #F0EBE0;
+  margin: 16px 0;
+}
+
+/* ── Field ── */
+.sm-field {
+  margin-bottom: 20px;
+}
+.sm-field:last-child { margin-bottom: 0; }
+
+.sm-field-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sm-field-value {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2D2D2D;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sm-field-note {
+  display: block;
+  font-size: 13px;
+  color: #aaa;
+  margin-top: 6px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── Store Code ── */
+.sm-code-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sm-code-box {
+  flex: 1;
+  background: #FAF8F3;
+  border: 1.5px solid #EDE8DC;
+  border-radius: 10px;
+  padding: 13px 18px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2D2D2D;
+  letter-spacing: 1.5px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sm-copy-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 1.5px solid #EDE8DC;
+  background: #FAF8F3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #888;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.sm-copy-btn:hover:not(:disabled) {
+  border-color: #E07A5F;
+  color: #E07A5F;
+  background: #FDE8E3;
+}
+.sm-copy-btn.copied {
+  border-color: #81B29A;
+  color: #81B29A;
+  background: #eef6f2;
+}
+.sm-copy-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Staff list ── */
+.sm-staff-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sm-staff-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #FAF8F3;
+  border: 1px solid #EDE8DC;
+  border-radius: 12px;
+  padding: 14px 18px;
+  transition: border-color 0.2s;
+}
+.sm-staff-item:hover { border-color: #E07A5F44; }
+
+.sm-staff-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sm-staff-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sm-staff-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2D2D2D;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sm-staff-email {
+  font-size: 13px;
+  color: #aaa;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sm-empty {
+  text-align: center;
+  color: #bbb;
+  font-size: 14px;
+  padding: 32px 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── Summary stats ── */
+.sm-stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+.sm-stat-box {
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px 28px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sm-stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sm-stat-value {
+  font-size: 36px;
+  font-weight: 800;
+  color: #2D2D2D;
+  line-height: 1.1;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sm-stat-note {
+  font-size: 13px;
+  color: #bbb;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}

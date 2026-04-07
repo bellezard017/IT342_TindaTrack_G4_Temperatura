@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import '../styles/Register.css';
 
@@ -15,9 +15,18 @@ const UsersIcon = () => (
 
 export default function SetupStaff() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [storeCode, setStoreCode] = useState('');
   const [error, setError]         = useState('');
   const [loading, setLoading]     = useState(false);
+
+  // If OAuth token is provided in URL, save it to localStorage
+  useEffect(() => {
+    const token = searchParams.get('token');
+    if (token) {
+      localStorage.setItem('token', token);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +34,8 @@ export default function SetupStaff() {
 
     setLoading(true);
     try {
-      await axiosInstance.post('/store/join', { storeCode: storeCode.trim().toUpperCase() });
+      const { data } = await axiosInstance.post('/store/join', { storeCode: storeCode.trim().toUpperCase() });
+      localStorage.setItem('user', JSON.stringify(data));
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid store code. Please try again.');

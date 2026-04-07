@@ -1,0 +1,198 @@
+/* ════════════════════════════════
+   STAFF DIRECTORY PAGE
+════════════════════════════════ */
+
+.sd-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Header ── */
+.sd-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sd-back-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1.5px solid #E8E3D8;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #555;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.sd-back-btn:hover {
+  border-color: #E07A5F;
+  color: #E07A5F;
+  background: #FDE8E3;
+}
+
+.sd-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #2D2D2D;
+  margin: 0 0 4px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sd-subtitle {
+  font-size: 14px;
+  color: #aaa;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sd-loading {
+  text-align: center;
+  color: #aaa;
+  font-size: 15px;
+  padding: 48px 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── Card wrapper ── */
+.sd-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 28px 32px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Directory header ── */
+.sd-dir-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.sd-dir-icon {
+  width: 36px;
+  height: 36px;
+  background: #FDE8E3;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sd-dir-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2D2D2D;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── 3-column grid ── */
+.sd-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* ── Member card ── */
+.sd-member-card {
+  background: #FAF8F3;
+  border: 1.5px solid #EDE8DC;
+  border-radius: 16px;
+  padding: 28px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.sd-member-card:hover {
+  border-color: #E07A5F55;
+  box-shadow: 0 4px 16px rgba(224,122,95,0.1);
+  transform: translateY(-2px);
+}
+
+.sd-member-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.sd-member-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2D2D2D;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sd-member-email {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #888;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sd-member-joined {
+  font-size: 12px;
+  color: #bbb;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Role badge */
+.sd-member-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-top: 6px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.sd-member-badge.owner {
+  background: #FDE8E3;
+  color: #E07A5F;
+}
+.sd-member-badge.staff {
+  background: #EEF2F7;
+  color: #6A8CAF;
+}
+
+.sd-empty {
+  text-align: center;
+  color: #bbb;
+  font-size: 14px;
+  padding: 48px 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── Responsive: 2 cols on smaller screens ── */
+@media (max-width: 900px) {
+  .sd-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 580px) {
+  .sd-grid {
+    grid-template-columns: 1fr;
+  }
+}

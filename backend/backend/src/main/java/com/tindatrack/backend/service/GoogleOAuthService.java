@@ -33,12 +33,14 @@ public class GoogleOAuthService {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final StoreService storeService;
     private final Gson gson;
     private final HttpClient httpClient;
 
-    public GoogleOAuthService(UserRepository userRepository, JwtUtil jwtUtil) {
+    public GoogleOAuthService(UserRepository userRepository, JwtUtil jwtUtil, StoreService storeService) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
+        this.storeService = storeService;
         this.gson = new Gson();
         this.httpClient = HttpClient.newHttpClient();
     }
@@ -130,7 +132,10 @@ public class GoogleOAuthService {
         User user = userRepository.findByEmail(userInfo.getEmail())
                 .orElseGet(() -> createNewGoogleUser(userInfo));
 
-        // 4. Generate JWT
+        // 4. Enrich user with store data
+        storeService.enrichUserStore(user);
+
+        // 5. Generate JWT
         String jwtToken = jwtUtil.generateToken(user.getEmail());
 
         return new AuthResponse(jwtToken, user);

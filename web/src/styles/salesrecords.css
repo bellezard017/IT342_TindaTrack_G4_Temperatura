@@ -1,0 +1,341 @@
+/* ════════════════════════════════
+   SALES RECORDS PAGE
+════════════════════════════════ */
+
+/* ── Main card ── */
+.sr-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 28px 32px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sr-toolbar-header {
+  margin-bottom: 18px;
+}
+
+.sr-section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #2D2D2D;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── Toolbar ── */
+.sr-toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.sr-search-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #FAF8F3;
+  border: 1.5px solid #EDE8DC;
+  border-radius: 10px;
+  padding: 0 14px;
+  transition: border-color 0.2s;
+}
+.sr-search-wrap:focus-within {
+  border-color: #E07A5F;
+  background: #fff;
+}
+
+.sr-search {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 11px 0;
+  font-size: 14px;
+  color: #2D2D2D;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  outline: none;
+}
+.sr-search::placeholder { color: #bbb; }
+
+.sr-filter {
+  background: #FAF8F3;
+  border: 1.5px solid #EDE8DC;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #2D2D2D;
+  outline: none;
+  cursor: pointer;
+  min-width: 160px;
+  transition: border-color 0.2s;
+}
+.sr-filter:focus { border-color: #E07A5F; }
+
+/* ── Table ── */
+.sr-table-wrap {
+  overflow-x: auto;
+}
+
+.sr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sr-table thead tr {
+  border-bottom: 2px solid #F0EBE0;
+}
+
+.sr-table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 10px 14px;
+  white-space: nowrap;
+}
+
+.sr-table tbody tr {
+  border-bottom: 1px solid #F5F0E8;
+  transition: background 0.15s;
+}
+.sr-table tbody tr:last-child { border-bottom: none; }
+.sr-table tbody tr:hover { background: #FAF8F3; }
+
+.sr-table td {
+  padding: 14px 14px;
+  font-size: 14px;
+  color: #2D2D2D;
+  vertical-align: middle;
+}
+
+/* Date cell */
+.sr-date-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sr-date {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2D2D2D;
+}
+.sr-time {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.sr-name {
+  font-weight: 600 !important;
+}
+
+/* Category badge */
+.sr-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sr-num {
+  color: #555 !important;
+}
+
+/* Total — coral */
+.sr-total {
+  font-weight: 700 !important;
+  color: #E07A5F !important;
+}
+
+/* Action buttons */
+.sr-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.sr-btn-edit {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid #E8E3D8;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #888;
+  transition: all 0.2s;
+}
+.sr-btn-edit:hover {
+  border-color: #E07A5F;
+  color: #E07A5F;
+  background: #FDE8E3;
+}
+
+.sr-btn-delete {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid #E8E3D8;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #888;
+  transition: all 0.2s;
+}
+.sr-btn-delete:hover {
+  border-color: #EF4444;
+  color: #EF4444;
+  background: #FEE2E2;
+}
+
+.sr-empty {
+  text-align: center;
+  color: #bbb;
+  font-size: 14px;
+  padding: 48px 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ════════════════════════════════
+   ADD SALE PAGE
+════════════════════════════════ */
+
+.as-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 36px 40px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 2-column grid */
+.as-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 24px;
+  margin-bottom: 24px;
+}
+
+.as-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.as-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.as-field input,
+.as-field select {
+  border: 1.5px solid #E8E3D8;
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-size: 15px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #2D2D2D;
+  background: #FAF8F3;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  appearance: auto;
+}
+.as-field input:focus,
+.as-field select:focus {
+  border-color: #E07A5F;
+  background: #fff;
+}
+.as-field input::placeholder { color: #bbb; }
+.as-field select.placeholder { color: #bbb; }
+
+/* Total preview */
+.as-total-preview {
+  background: #FAF8F3;
+  border: 1.5px solid #EDE8DC;
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 15px;
+  color: #555;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin-bottom: 24px;
+}
+.as-total-preview strong {
+  color: #E07A5F;
+  font-size: 18px;
+}
+
+/* Buttons */
+.as-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.as-btn-save {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #E07A5F;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: background 0.2s;
+}
+.as-btn-save:hover:not(:disabled) { background: #c4604a; }
+.as-btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.as-btn-cancel {
+  background: transparent;
+  border: 1.5px solid #E8E3D8;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #888;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.2s;
+}
+.as-btn-cancel:hover {
+  border-color: #aaa;
+  color: #555;
+}
+
+/* Spinner (reused) */
+.spinner-sm {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin-sm 0.6s linear infinite;
+}
+@keyframes spin-sm {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .as-grid { grid-template-columns: 1fr; }
+}

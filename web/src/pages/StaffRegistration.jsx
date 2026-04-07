@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { registerApi } from '../api/registerApi';
+import PasswordField from '../components/PasswordField';
 import '../styles/Register.css';
 
 const UsersIcon = () => (
@@ -128,23 +129,27 @@ export default function StaffRegistration() {
             />
           </div>
 
-          <div className="field">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password" name="password" type="password"
-              placeholder="••••••••" autoComplete="new-password"
-              value={form.password} onChange={handleChange}
-            />
-          </div>
+          <PasswordField
+            id="password"
+            name="password"
+            label="Password"
+            placeholder="••••••••"
+            autoComplete="new-password"
+            value={form.password}
+            onChange={handleChange}
+            error={!!error}
+          />
 
-          <div className="field">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              id="confirmPassword" name="confirmPassword" type="password"
-              placeholder="••••••••" autoComplete="new-password"
-              value={form.confirmPassword} onChange={handleChange}
-            />
-          </div>
+          <PasswordField
+            id="confirmPassword"
+            name="confirmPassword"
+            label="Confirm Password"
+            placeholder="••••••••"
+            autoComplete="new-password"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            error={!!error}
+          />
 
           <div className="field">
             <label htmlFor="storeCode">Store Code</label>
