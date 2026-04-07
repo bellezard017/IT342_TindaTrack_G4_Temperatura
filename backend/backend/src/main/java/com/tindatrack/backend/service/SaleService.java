@@ -54,6 +54,21 @@ public class SaleService {
         return saleRepository.findByStoreIdOrderBySaleDateDesc(storeId);
     }
 
+    public Sale getSaleById(Long id) {
+        return saleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sale not found."));
+    }
+
+    public Sale updateSale(Long id, SaleRequest request) {
+        Sale sale = getSaleById(id);
+        sale.setItemName(request.getName().trim());
+        sale.setCategory(request.getCategory().trim());
+        sale.setQuantity(request.getQuantity());
+        sale.setPrice(request.getPrice());
+        sale.setTotalPrice(request.getQuantity() * request.getPrice());
+        return saleRepository.save(sale);
+    }
+
     public DashboardResponse getDashboardForStore(Long storeId) {
         List<Sale> allSales = getSalesForStore(storeId);
 
@@ -104,6 +119,10 @@ public class SaleService {
         }
 
         return new DashboardResponse(totalDailySales, transactionCount, itemsSold, recentSales, topItems, chartData);
+    }
+
+    public void deleteSale(Long id) {
+        saleRepository.deleteById(id);
     }
 
     public SaleResponse mapToResponse(Sale sale) {
