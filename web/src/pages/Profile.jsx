@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SidebarLayout from '../components/SidebarLayout';
 import { authApi } from '../api/authApi';
-import { storeApi } from '../api/storeApi';
 import '../styles/Profile.css';
 
 /* ── Icons ── */
@@ -19,9 +18,11 @@ const SaveIcon     = () => (<svg width="15" height="15" viewBox="0 0 24 24" fill
 
 export default function Profile() {
   const [user, setUser]             = useState(JSON.parse(localStorage.getItem('user') || '{}'));
-  const [teamCount, setTeamCount]   = useState(0);
   const [avatarUrl, setAvatarUrl]   = useState(null);
   const [uploading, setUploading]   = useState(false);
+  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
+  const [showAvatarPreview, setShowAvatarPreview] = useState(false);
+  const [avatarActionError, setAvatarActionError] = useState('');
 
   // Edit modal state
   const [showEdit, setShowEdit]     = useState(false);
@@ -40,10 +41,6 @@ export default function Profile() {
         setUser(freshUser);
         localStorage.setItem('user', JSON.stringify(freshUser));
         if (freshUser?.avatarUrl) setAvatarUrl(freshUser.avatarUrl);
-        if (freshUser?.storeId) {
-          const team = await storeApi.getTeam();
-          setTeamCount(Array.isArray(team) ? team.length : 0);
-        }
       } catch {
         // keep stale user
       }
@@ -60,11 +57,43 @@ export default function Profile() {
   };
 
   /* ── Avatar upload ── */
-  const handleAvatarClick = () => fileInputRef.current?.click();
+  const toggleAvatarMenu = () => {
+    setAvatarMenuOpen((current) => !current);
+    setAvatarActionError('');
+  };
+
+  const handleViewAvatar = () => {
+    setAvatarMenuOpen(false);
+    if (avatarUrl) {
+      setShowAvatarPreview(true);
+    }
+  };
+
+  const handleUploadProfile = () => {
+    setAvatarMenuOpen(false);
+    fileInputRef.current?.click();
+  };
+
+  const handleRemoveAvatar = async () => {
+    setAvatarMenuOpen(false);
+    setAvatarActionError('');
+
+    try {
+      await authApi.removeAvatar();
+      const updated = { ...user, avatarUrl: null };
+      setUser(updated);
+      setAvatarUrl(null);
+      localStorage.setItem('user', JSON.stringify(updated));
+    } catch (err) {
+      setAvatarActionError('Unable to remove profile image. Please try again.');
+    }
+  };
 
   const handleAvatarChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    setAvatarMenuOpen(false);
 
     // Preview immediately
     const localUrl = URL.createObjectURL(file);
@@ -145,8 +174,8 @@ export default function Profile() {
             <button
               className={`profile-avatar-cam ${uploading ? 'uploading' : ''}`}
               type="button"
-              title="Change photo"
-              onClick={handleAvatarClick}
+              title="Profile actions"
+              onClick={toggleAvatarMenu}
               disabled={uploading}
             >
               {uploading
@@ -162,6 +191,21 @@ export default function Profile() {
               style={{ display: 'none' }}
               onChange={handleAvatarChange}
             />
+
+            {avatarMenuOpen && (
+              <div className="avatar-menu">
+                <button type="button" className="avatar-menu-item" onClick={handleViewAvatar}>
+                  View Profile
+                </button>
+                <button type="button" className="avatar-menu-item" onClick={handleUploadProfile}>
+                  Upload Profile
+                </button>
+                <button type="button" className="avatar-menu-item avatar-menu-remove" onClick={handleRemoveAvatar}>
+                  Remove Profile
+                </button>
+                {avatarActionError && <div className="avatar-menu-error">{avatarActionError}</div>}
+              </div>
+            )}
           </div>
 
           <h2 className="profile-name">{user?.name || 'Juan Dela Cruz'}</h2>
@@ -186,18 +230,17 @@ export default function Profile() {
           </button>
         </div>
 
-        {/* ── Staff Members Card ── */}
-        <div className="profile-team-card">
-          <div className="profile-team-icon"><TeamIcon /></div>
-          <div className="profile-team-body">
-            <span className="profile-team-label">Staff Members</span>
-            <span className="profile-team-count">{teamCount} members</span>
+        {showAvatarPreview && (
+          <div className="modal-overlay" onClick={() => setShowAvatarPreview(false)}>
+            <div className="avatar-preview-box" onClick={(e) => e.stopPropagation()}>
+              <button className="modal-close" onClick={() => setShowAvatarPreview(false)}>
+                <CloseIcon />
+              </button>
+              <img src={avatarUrl} alt="Profile Preview" className="avatar-preview-img" />
+              <div className="avatar-preview-caption">Profile photo</div>
+            </div>
           </div>
-          <button className="profile-team-btn" type="button"
-            onClick={() => navigate('/staff')}>
-            View All
-          </button>
-        </div>
+        )}
 
       </div>
 
