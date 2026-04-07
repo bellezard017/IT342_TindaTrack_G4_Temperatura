@@ -11,11 +11,10 @@ import com.tindatrack.backend.repository.SaleRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -24,8 +23,26 @@ public class SaleService {
 
     private final SaleRepository saleRepository;
 
+    // ✅ Observer Pattern: list of observers
+    private List<SaleObserver> observers = new ArrayList<>();
+
     public SaleService(SaleRepository saleRepository) {
         this.saleRepository = saleRepository;
+
+        // ✅ Register observer
+        this.addObserver(new SaleNotificationService());
+    }
+
+    // ✅ Add observer
+    public void addObserver(SaleObserver observer) {
+        observers.add(observer);
+    }
+
+    // ✅ Notify observers
+    private void notifyObservers(Sale sale) {
+        for (SaleObserver observer : observers) {
+            observer.update(sale);
+        }
     }
 
     public Sale createSale(User user, SaleRequest request) {
@@ -33,18 +50,20 @@ public class SaleService {
             throw new RuntimeException("Your account must be connected to a store before recording sales.");
         }
 
-        Sale sale = new Sale();
-        sale.setStoreId(user.getStoreId());
-        sale.setUserId(user.getId());
-        sale.setItemName(request.getName().trim());
-        sale.setCategory(request.getCategory().trim());
-        sale.setQuantity(request.getQuantity());
-        sale.setPrice(request.getPrice());
-        sale.setTotalPrice(request.getQuantity() * request.getPrice());
-        sale.setCreatedBy(user.getName());
-        sale.setSaleDate(LocalDateTime.now());
+        // ✅ Singleton Pattern usage
+        String systemName = ConfigManager.getInstance().getSystemName();
+        System.out.println(systemName);
 
-        return saleRepository.save(sale);
+        // ✅ Factory Pattern usage
+        Sale sale = SaleFactory.createSale(user, request);
+
+        // Save sale
+        Sale savedSale = saleRepository.save(sale);
+
+        // ✅ Observer Pattern trigger
+        notifyObservers(savedSale);
+
+        return savedSale;
     }
 
     public List<Sale> getSalesForStore(Long storeId) {
@@ -52,21 +71,6 @@ public class SaleService {
             return List.of();
         }
         return saleRepository.findByStoreIdOrderBySaleDateDesc(storeId);
-    }
-
-    public Sale getSaleById(Long id) {
-        return saleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sale not found."));
-    }
-
-    public Sale updateSale(Long id, SaleRequest request) {
-        Sale sale = getSaleById(id);
-        sale.setItemName(request.getName().trim());
-        sale.setCategory(request.getCategory().trim());
-        sale.setQuantity(request.getQuantity());
-        sale.setPrice(request.getPrice());
-        sale.setTotalPrice(request.getQuantity() * request.getPrice());
-        return saleRepository.save(sale);
     }
 
     public DashboardResponse getDashboardForStore(Long storeId) {
@@ -95,10 +99,15 @@ public class SaleService {
                 .collect(Collectors.groupingBy(Sale::getItemName, Collectors.summarizingDouble(Sale::getTotalPrice)))
                 .entrySet()
                 .stream()
-                .map(entry -> new TopItemResponse(0, entry.getKey(), allSales.stream()
-                        .filter(sale -> sale.getItemName().equals(entry.getKey()))
-                        .mapToInt(Sale::getQuantity)
-                        .sum(), entry.getValue().getSum()))
+                .map(entry -> new TopItemResponse(
+                        0,
+                        entry.getKey(),
+                        allSales.stream()
+                                .filter(sale -> sale.getItemName().equals(entry.getKey()))
+                                .mapToInt(Sale::getQuantity)
+                                .sum(),
+                        entry.getValue().getSum()
+                ))
                 .sorted(Comparator.comparingDouble(TopItemResponse::getAmount).reversed())
                 .limit(5)
                 .collect(Collectors.toList());
@@ -118,7 +127,14 @@ public class SaleService {
             topItems.get(i).setRank(i + 1);
         }
 
-        return new DashboardResponse(totalDailySales, transactionCount, itemsSold, recentSales, topItems, chartData);
+        return new DashboardResponse(
+                totalDailySales,
+                transactionCount,
+                itemsSold,
+                recentSales,
+                topItems,
+                chartData
+        );
     }
 
     public void deleteSale(Long id) {
@@ -129,6 +145,7 @@ public class SaleService {
         String displayDate = sale.getSaleDate() != null
                 ? sale.getSaleDate().format(DateTimeFormatter.ofPattern("MMM d, yyyy h:mm a"))
                 : "";
+
         return new SaleResponse(
                 sale.getId(),
                 displayDate,
