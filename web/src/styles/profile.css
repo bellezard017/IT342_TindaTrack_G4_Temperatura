@@ -1,0 +1,444 @@
+/* ════════════════════════════════
+   PROFILE PAGE
+════════════════════════════════ */
+
+.profile-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 100%;
+}
+
+/* ── Main card ── */
+.profile-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 48px 56px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+/* Avatar */
+.profile-avatar-wrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E07A5F, #c4604a);
+  color: #fff;
+  font-size: 38px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 4px 16px rgba(224,122,95,0.35);
+}
+
+.profile-avatar-cam {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #E07A5F;
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.profile-avatar-cam:hover { background: #c4604a; }
+
+/* Name & badge */
+.profile-name {
+  font-size: 24px;
+  font-weight: 800;
+  color: #2D2D2D;
+  margin: 0 0 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.profile-badge {
+  display: inline-block;
+  background: #FDE8E3;
+  color: #E07A5F;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+  margin-bottom: 28px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Info fields */
+.profile-fields {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.profile-field {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #FAF8F3;
+  border: 1px solid #EDE8DC;
+  border-radius: 12px;
+  padding: 14px 18px;
+  transition: border-color 0.2s;
+}
+.profile-field:hover {
+  border-color: #E07A5F44;
+}
+
+.profile-field-icon {
+  width: 36px;
+  height: 36px;
+  background: #FDE8E3;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile-field-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profile-field-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.profile-field-value {
+  font-size: 15px;
+  font-weight: 500;
+  color: #2D2D2D;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Edit button */
+.profile-edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1.5px solid #E8E3D8;
+  border-radius: 10px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.2s;
+  align-self: flex-end;
+}
+.profile-edit-btn:hover {
+  border-color: #E07A5F;
+  color: #E07A5F;
+  background: #FDE8E3;
+}
+
+/* ── Staff Members card ── */
+.profile-team-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.profile-team-icon {
+  width: 40px;
+  height: 40px;
+  background: #FDE8E3;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile-team-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.profile-team-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.profile-team-count {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2D2D2D;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.profile-team-btn {
+  background: transparent;
+  border: 1.5px solid #E8E3D8;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.profile-team-btn:hover {
+  border-color: #E07A5F;
+  color: #E07A5F;
+  background: #FDE8E3;
+}
+
+/* ── Full-width overrides ── */
+.profile-wrapper {
+  width: 100%;
+}
+
+.profile-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.profile-fields {
+  width: 100%;
+}
+
+.profile-field {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px 22px;
+}
+
+.profile-field-body {
+  flex: 1;
+}
+
+.profile-team-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.profile-edit-btn {
+  margin-top: 8px;
+}
+
+/* ════════════════════════════════
+   AVATAR UPLOAD
+════════════════════════════════ */
+.profile-avatar-img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.profile-avatar-cam.uploading {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.spinner-sm {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin-sm 0.6s linear infinite;
+}
+@keyframes spin-sm {
+  to { transform: rotate(360deg); }
+}
+
+/* ════════════════════════════════
+   EDIT CONTACT MODAL
+════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeInOverlay 0.18s ease;
+}
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-box {
+  background: #fff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  animation: slideUpModal 0.22s ease;
+  overflow: hidden;
+}
+@keyframes slideUpModal {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 26px 18px;
+  border-bottom: 1px solid #F0EBE0;
+}
+.modal-header h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #2D2D2D;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid #E8E3D8;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #888;
+  transition: all 0.2s;
+}
+.modal-close:hover {
+  border-color: #E07A5F;
+  color: #E07A5F;
+  background: #FDE8E3;
+}
+
+.modal-body {
+  padding: 20px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.modal-field label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.modal-field input {
+  border: 1.5px solid #E8E3D8;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 15px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #2D2D2D;
+  background: #FAF8F3;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.modal-field input:focus {
+  border-color: #E07A5F;
+  background: #fff;
+}
+.modal-field input::placeholder {
+  color: #bbb;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 26px 22px;
+  border-top: 1px solid #F0EBE0;
+}
+.modal-cancel {
+  border: 1.5px solid #E8E3D8;
+  border-radius: 10px;
+  background: transparent;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #888;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.2s;
+}
+.modal-cancel:hover {
+  border-color: #aaa;
+  color: #555;
+}
+.modal-save {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  border-radius: 10px;
+  background: #E07A5F;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: background 0.2s;
+}
+.modal-save:hover:not(:disabled) { background: #c4604a; }
+.modal-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.success-banner {
+  background: #eef6f2;
+  border: 1px solid #81B29A;
+  color: #4a8a6f;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}

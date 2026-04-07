@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import '../styles/Register.css';
 
@@ -12,9 +12,18 @@ const StoreIcon = () => (
 
 export default function SetupStore() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [storeName, setStoreName] = useState('');
   const [error, setError]         = useState('');
   const [loading, setLoading]     = useState(false);
+
+  // If OAuth token is provided in URL, save it to localStorage
+  useEffect(() => {
+    const token = searchParams.get('token');
+    if (token) {
+      localStorage.setItem('token', token);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +31,8 @@ export default function SetupStore() {
 
     setLoading(true);
     try {
-      await axiosInstance.post('/store/setup', { storeName });
+      const { data } = await axiosInstance.post('/store/setup', { storeName });
+      localStorage.setItem('user', JSON.stringify(data));
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to set up store. Please try again.');

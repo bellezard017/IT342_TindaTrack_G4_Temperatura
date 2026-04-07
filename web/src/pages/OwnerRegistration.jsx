@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { registerApi } from '../api/registerApi';
+import PasswordField from '../components/PasswordField';
 import '../styles/Register.css';
 
 const StoreIcon = () => (
@@ -38,23 +39,25 @@ export default function OwnerRegistration() {
   };
 
   const validatePassword = (password) => {
-    return (
-      password.length >= 8 &&
-      /[A-Z]/.test(password) &&
-      /[a-z]/.test(password) &&
-      /\d/.test(password) &&
-      /[@$!%*?&]/.test(password)
-    );
+    const minLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[@$!%*?&]/.test(password);
+
+    return minLength && hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar;
   };
 
   const validate = () => {
-    if (!form.name.trim())                        return 'Full name is required.';
-    if (!form.email.trim())                       return 'Email is required.';
-    if (!/\S+@\S+\.\S+/.test(form.email))         return 'Enter a valid email address.';
-    if (form.password.length < 8)                 return 'Password must be at least 8 characters.';
-    if (!validatePassword(form.password))         return 'Password must contain: uppercase (A-Z), lowercase (a-z), numbers (0-9), and special characters (!@#$%^&*)';
-    if (form.password !== form.confirmPassword)   return 'Passwords do not match.';
-    if (!form.storeName.trim())                   return 'Store name is required.';
+    if (!form.name.trim())        return 'Full name is required.';
+    if (!form.email.trim())       return 'Email is required.';
+    if (!/\S+@\S+\.\S+/.test(form.email)) return 'Enter a valid email address.';
+    if (form.password.length < 8) return 'Password must be at least 8 characters.';
+    if (!validatePassword(form.password)) {
+      return 'Password must contain: uppercase (A-Z), lowercase (a-z), numbers (0-9), and special characters (!@#$%^&*)';
+    }
+    if (form.password !== form.confirmPassword) return 'Passwords do not match.';
+    if (!form.storeName.trim())   return 'Store name is required.';
     return null;
   };
 
@@ -65,6 +68,7 @@ export default function OwnerRegistration() {
 
     setLoading(true);
     setError('');
+
     try {
       const data = await registerApi.registerOwner({
         name:            form.name,
@@ -73,23 +77,22 @@ export default function OwnerRegistration() {
         confirmPassword: form.confirmPassword,
         storeName:       form.storeName,
       });
+
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       navigate('/dashboard');
     } catch (err) {
-      setError(
+      const msg =
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Registration failed. Please try again.'
-      );
+        'Registration failed. Please try again.';
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
-  // Save intent so Dashboard knows to redirect to setup-store after OAuth
   const handleGoogleSignup = () => {
-    sessionStorage.setItem('oauth_intent', 'owner');
     window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/auth/oauth/google/login`;
   };
 
@@ -97,6 +100,7 @@ export default function OwnerRegistration() {
     <div className="reg-form-page">
       <div className="reg-form-card">
 
+        {/* Logo */}
         <div className="reg-form-logo">
           <StoreIcon />
         </div>
@@ -110,9 +114,13 @@ export default function OwnerRegistration() {
           <div className="field">
             <label htmlFor="name">Full Name</label>
             <input
-              id="name" name="name" type="text"
-              placeholder="Juan Dela Cruz" autoComplete="name"
-              value={form.name} onChange={handleChange}
+              id="name"
+              name="name"
+              type="text"
+              placeholder="Juan Dela Cruz"
+              autoComplete="name"
+              value={form.name}
+              onChange={handleChange}
               className={error && !form.name ? 'error-input' : ''}
             />
           </div>
@@ -120,36 +128,47 @@ export default function OwnerRegistration() {
           <div className="field">
             <label htmlFor="email">Email</label>
             <input
-              id="email" name="email" type="email"
-              placeholder="your@email.com" autoComplete="email"
-              value={form.email} onChange={handleChange}
+              id="email"
+              name="email"
+              type="email"
+              placeholder="your@email.com"
+              autoComplete="email"
+              value={form.email}
+              onChange={handleChange}
             />
           </div>
 
-          <div className="field">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password" name="password" type="password"
-              placeholder="••••••••" autoComplete="new-password"
-              value={form.password} onChange={handleChange}
-            />
-          </div>
+          <PasswordField
+            id="password"
+            name="password"
+            label="Password"
+            placeholder="••••••••"
+            autoComplete="new-password"
+            value={form.password}
+            onChange={handleChange}
+            error={!!error}
+          />
 
-          <div className="field">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              id="confirmPassword" name="confirmPassword" type="password"
-              placeholder="••••••••" autoComplete="new-password"
-              value={form.confirmPassword} onChange={handleChange}
-            />
-          </div>
+          <PasswordField
+            id="confirmPassword"
+            name="confirmPassword"
+            label="Confirm Password"
+            placeholder="••••••••"
+            autoComplete="new-password"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            error={!!error}
+          />
 
           <div className="field">
             <label htmlFor="storeName">Store Name</label>
             <input
-              id="storeName" name="storeName" type="text"
+              id="storeName"
+              name="storeName"
+              type="text"
               placeholder="Tindahan ni Juan"
-              value={form.storeName} onChange={handleChange}
+              value={form.storeName}
+              onChange={handleChange}
             />
           </div>
 

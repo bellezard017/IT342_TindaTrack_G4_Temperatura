@@ -1,38 +1,39 @@
 import axiosInstance from './axiosInstance';
 
 export const authApi = {
-  /**
-   * POST /auth/login
-   * @param {{ email: string, password: string }} credentials
-   * @returns {{ user: object, token: string }}
-   */
-  login: async (credentials) => {
-    const response = await axiosInstance.post('/auth/login', credentials);
-    return response.data;
+  login: async ({ email, password }) => {
+    const { data } = await axiosInstance.post('/auth/login', { email, password });
+    return data;
   },
 
-  /**
-   * POST /auth/logout
-   */
   logout: async () => {
-    const response = await axiosInstance.post('/auth/logout');
-    return response.data;
+    await axiosInstance.post('/auth/logout');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   },
 
-  /**
-   * GET /auth/me  – returns current authenticated user
-   */
   getMe: async () => {
-    const response = await axiosInstance.get('/auth/me');
-    return response.data;
+    const { data } = await axiosInstance.get('/auth/me');
+    return data;
   },
 
-  /**
-   * POST /auth/oauth/google
-   * @param {{ token: string }} payload  – Google OAuth token from frontend
-   */
-  googleLogin: async (payload) => {
-    const response = await axiosInstance.post('/auth/oauth/google', payload);
-    return response.data;
+  googleLogin: () => {
+    window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/auth/oauth/google/login`;
+  },
+
+  // Upload profile picture — sends multipart/form-data, returns { avatarUrl }
+  uploadAvatar: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const { data } = await axiosInstance.post('/user/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return data;
+  },
+
+  // Update phone and/or address
+  updateProfile: async (payload) => {
+    const { data } = await axiosInstance.put('/user/profile', payload);
+    return data;
   },
 };

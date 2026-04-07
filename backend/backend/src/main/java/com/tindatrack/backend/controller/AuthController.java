@@ -41,8 +41,6 @@ public class AuthController {
         }
 
         String email = authentication.getName();
-        return userRepository.findByEmail(email)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.status(404).build());
+        return ResponseEntity.ok(authService.getCurrentUser(email));
     }
 }

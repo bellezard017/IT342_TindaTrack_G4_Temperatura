@@ -50,9 +50,20 @@ public class GoogleOAuthController {
             // Authenticate user with Google OAuth
             AuthResponse authResponse = googleOAuthService.authenticateGoogleUser(code);
             
-            // Redirect to dashboard with token and user info
-            String redirectUrl = "http://localhost:5173/dashboard?token=" + authResponse.getToken() + 
-                    "&user=" + authResponse.getUser().getName();
+            String redirectUrl;
+            // Check if user needs to set up a store (OWNER role with no store)
+            if ("OWNER".equalsIgnoreCase(authResponse.getUser().getRole()) && 
+                (authResponse.getUser().getStoreId() == null || authResponse.getUser().getStoreId() == 0L)) {
+                // New owner who needs to create a store
+                redirectUrl = "http://localhost:5173/setup-store?token=" + authResponse.getToken();
+            } else if (authResponse.getUser().getStoreId() == null || authResponse.getUser().getStoreId() == 0L) {
+                // User without a store assignment (shouldn't happen, but redirect to setup-staff)
+                redirectUrl = "http://localhost:5173/setup-staff?token=" + authResponse.getToken();
+            } else {
+                // User has a store, go to dashboard
+                redirectUrl = "http://localhost:5173/dashboard?token=" + authResponse.getToken() + 
+                        "&user=" + authResponse.getUser().getName();
+            }
             return new RedirectView(redirectUrl);
             
         } catch (IOException | InterruptedException e) {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authApi } from '../api/authApi';
+import PasswordField from '../components/PasswordField';
 import '../styles/Login.css';
 
 /* ── SVG Icons ── */
@@ -160,15 +161,16 @@ export default function Login() {
               />
             </div>
 
-            <div className="field">
-              <label htmlFor="password">Password</label>
-              <input
-                id="password" name="password" type="password"
-                placeholder="••••••••" autoComplete="current-password"
-                value={form.password} onChange={handleChange}
-                className={error ? 'error-input' : ''}
-              />
-            </div>
+            <PasswordField
+              id="password"
+              name="password"
+              label="Password"
+              placeholder="••••••••"
+              autoComplete="current-password"
+              value={form.password}
+              onChange={handleChange}
+              error={!!error}
+            />
 
             <button type="submit" className="btn-login" disabled={loading}>
               {loading ? <><span className="spinner" /> Signing in…</> : 'Login'}
