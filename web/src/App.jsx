@@ -6,29 +6,15 @@ import StaffRegistration from './pages/StaffRegistration';
 import Dashboard         from './pages/Dashboard';
 import AddSale           from './pages/AddSale';
 import SalesRecords      from './pages/SalesRecords';
+import EditSale          from './pages/EditSale';
 import StoreManagement   from './pages/StoreManagement';
 import Profile           from './pages/Profile';
 import OAuthCallback     from './pages/OAuthCallback';
 import SetupStore        from './pages/SetupStore';
 import SetupStaff        from './pages/SetupStaff';
-import StaffDirectory    from './pages/StaffDirectory'; 
+import StaffDirectory    from './pages/StaffDirectory';
 import PrivateRoute      from './components/PrivateRoute';
-
-// Role-based route wrapper
-function RoleBasedRoute({ children, allowedRoles }) {
-  const token = localStorage.getItem('token');
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  if (allowedRoles && !allowedRoles.includes(user?.role)) {
-    return <Navigate to="/dashboard" replace />;
-  }
-  
-  return children;
-}
+import RoleBasedRoute    from './components/RoleBasedRoute';
 
 function App() {
   return (
@@ -50,7 +36,7 @@ function App() {
         <Route path="/dashboard"      element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/add-sale"       element={<PrivateRoute><AddSale /></PrivateRoute>} />
         <Route path="/sales"          element={<PrivateRoute><SalesRecords /></PrivateRoute>} />
-        {/* Store Management - Owner only */}
+        <Route path="/edit-sale/:id"  element={<PrivateRoute><EditSale /></PrivateRoute>} />
         <Route path="/store"          element={<RoleBasedRoute allowedRoles={['OWNER']}><StoreManagement /></RoleBasedRoute>} />
         <Route path="/profile"        element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/setup-store"    element={<PrivateRoute><SetupStore /></PrivateRoute>} />
