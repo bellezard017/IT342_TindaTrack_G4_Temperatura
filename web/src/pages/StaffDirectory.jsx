@@ -54,7 +54,13 @@ export default function StaffDirectory() {
         setUser(freshUser);
         localStorage.setItem('user', JSON.stringify(freshUser));
         const team = await storeApi.getTeam();
-        setTeamMembers(team || []);
+        const orderedTeam = (team || []).sort((a, b) => {
+          const aOwner = a?.role?.toUpperCase() === 'OWNER';
+          const bOwner = b?.role?.toUpperCase() === 'OWNER';
+          if (aOwner === bOwner) return 0;
+          return aOwner ? -1 : 1;
+        });
+        setTeamMembers(orderedTeam);
       } catch {
         setError('Unable to load team members.');
       } finally {
@@ -101,8 +107,12 @@ export default function StaffDirectory() {
                   const isOwner = member.role?.toUpperCase() === 'OWNER';
                   return (
                     <div className="sd-member-card" key={member.id}>
-                      <div className="sd-member-avatar" style={{ background: avatarColor(i) }}>
-                        {member.name?.charAt(0)?.toUpperCase() || '?'}
+                      <div className="sd-member-avatar" style={member.avatarUrl ? undefined : { background: avatarColor(i) }}>
+                        {member.avatarUrl ? (
+                          <img src={member.avatarUrl} alt={`${member?.name || 'Member'} avatar`} />
+                        ) : (
+                          member.name?.charAt(0)?.toUpperCase() || '?'
+                        )}
                       </div>
                       <h3 className="sd-member-name">{member.name}</h3>
                       <div className="sd-member-email">
