@@ -123,50 +123,40 @@ export default function StoreManagement() {
             </div>
 
             {/* Owner */}
+            <div className="sm-owner-row">
+              <div className="sm-owner-avatar" style={user?.avatarUrl ? undefined : { background: avatarColor(0) }}>
+                {user?.avatarUrl ? (
+                  <img src={user.avatarUrl} alt={`${user?.name || 'Owner'} avatar`} />
+                ) : (
+                  user?.name?.charAt(0)?.toUpperCase() || '—'
+                )}
+              </div>
+              <div className="sm-owner-meta">
+                <span className="sm-field-label">Owner</span>
+                <span className="sm-field-value">{user?.name || '—'}</span>
+                <span className="sm-field-note">{user?.email || ''}</span>
+              </div>
+            </div>
             <div className="sm-field">
-              <span className="sm-field-label">Owner</span>
-              <span className="sm-field-value">{user?.name || '—'}</span>
-              <span className="sm-field-note">{user?.email || ''}</span>
+              <span className="sm-field-label">Contact</span>
+              <span className="sm-field-value">{user?.phone || 'Not set'}</span>
+              <span className="sm-field-note">{user?.address || 'Address not set'}</span>
             </div>
           </div>
 
-          {/* ── Staff Members Card ── */}
           <div className="sm-card">
             <div className="sm-section-header">
               <div className="sm-section-icon"><TeamIcon /></div>
-              <h3 className="sm-section-title">Staff Members ({teamMembers.length})</h3>
+              <h3 className="sm-section-title">Staff Members</h3>
               <button className="sm-view-all-btn" onClick={() => navigate('/staff')}>View All Staff</button>
             </div>
 
             <div className="sm-divider" />
 
-            <div className="sm-staff-list">
-              {teamMembers.length > 0 ? teamMembers.map((member, i) => (
-                <div className="sm-staff-item" key={member.id}>
-                  <div className="sm-staff-avatar" style={{ background: avatarColor(i) }}>
-                    {member.name?.charAt(0)?.toUpperCase() || '?'}
-                  </div>
-                  <div className="sm-staff-meta">
-                    <span className="sm-staff-name">{member.name}</span>
-                    <span className="sm-staff-email">{member.email}</span>
-                  </div>
-                </div>
-              )) : (
-                <div className="sm-empty">No team members found yet.</div>
-              )}
-            </div>
-          </div>
-
-          {/* ── Summary Stats ── */}
-          <div className="sm-stats-row">
-            <div className="sm-stat-box">
-              <span className="sm-stat-label">Total Staff</span>
-              <span className="sm-stat-value">{staffCount}</span>
-            </div>
-            <div className="sm-stat-box">
-              <span className="sm-stat-label">Total Members</span>
-              <span className="sm-stat-value">{totalMembers}</span>
-              <span className="sm-stat-note">Including owner</span>
+            <div className="sm-field">
+              <span className="sm-field-label">Team Members</span>
+              <span className="sm-field-value">{totalMembers}</span>
+              <span className="sm-field-note">Owner + staff members are visible in the team directory.</span>
             </div>
           </div>
         </>
