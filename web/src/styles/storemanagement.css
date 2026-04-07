@@ -175,7 +175,8 @@
 }
 .sm-staff-item:hover { border-color: #E07A5F44; }
 
-.sm-staff-avatar {
+.sm-staff-avatar,
+.sm-owner-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -187,6 +188,27 @@
   justify-content: center;
   flex-shrink: 0;
   font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow: hidden;
+}
+
+.sm-owner-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.sm-owner-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sm-owner-avatar img,
+.sm-staff-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .sm-staff-meta {
