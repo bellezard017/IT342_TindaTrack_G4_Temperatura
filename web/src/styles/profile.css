@@ -58,6 +58,75 @@
 }
 .profile-avatar-cam:hover { background: #c4604a; }
 
+.avatar-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 180px;
+  margin-top: 10px;
+  background: #fff;
+  border: 1px solid #E8E3D8;
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  z-index: 20;
+  overflow: hidden;
+}
+
+.avatar-menu-item {
+  width: 100%;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: #2D2D2D;
+  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: background 0.2s;
+}
+
+.avatar-menu-item:hover {
+  background: #F8F4ED;
+}
+
+.avatar-menu-remove {
+  color: #E07A5F;
+}
+
+.avatar-menu-error {
+  padding: 10px 14px;
+  color: #B91C1C;
+  font-size: 12px;
+  background: #FEF2F2;
+}
+
+.avatar-preview-box {
+  position: relative;
+  background: #fff;
+  border-radius: 22px;
+  padding: 22px;
+  width: min(90vw, 420px);
+  box-shadow: 0 26px 60px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.avatar-preview-img {
+  width: 100%;
+  border-radius: 20px;
+  object-fit: cover;
+  max-height: 420px;
+}
+
+.avatar-preview-caption {
+  font-size: 14px;
+  color: #555;
+  text-align: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
 /* Name & badge */
 .profile-name {
   font-size: 24px;
