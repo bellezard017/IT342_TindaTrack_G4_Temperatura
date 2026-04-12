@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ══════════════════════════════════════════
+         BASE APP THEME
+    ══════════════════════════════════════════ -->
+    <style name="Theme.TindaTrackMobile" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/coral</item>
+        <item name="colorPrimaryDark">@color/coral_dark</item>
+        <item name="colorAccent">@color/coral</item>
+        <item name="android:windowBackground">@color/screen_bg</item>
+        <item name="android:statusBarColor">@color/coral_dark</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- Auth screens (coral background) -->
+    <style name="Theme.TindaTrackMobile.Auth" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/coral</item>
+        <item name="colorPrimaryDark">@color/coral_dark</item>
+        <item name="colorAccent">@color/coral</item>
+        <item name="android:windowBackground">@color/coral</item>
+        <item name="android:statusBarColor">@color/coral_dark</item>
+        <item name="android:navigationBarColor">@color/white</item>
+    </style>
+
+    <!-- White screens (register forms) -->
+    <style name="Theme.TindaTrackMobile.White" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/coral</item>
+        <item name="colorPrimaryDark">@color/coral_dark</item>
+        <item name="colorAccent">@color/coral</item>
+        <item name="android:windowBackground">@color/off_white</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/white</item>
+    </style>
+
+    <!-- Main app (cream bg) -->
+    <style name="Theme.TindaTrackMobile.Main" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/coral</item>
+        <item name="colorPrimaryDark">@color/coral_dark</item>
+        <item name="colorAccent">@color/coral</item>
+        <item name="android:windowBackground">@color/screen_bg</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/white</item>
+    </style>
+
+    <!-- ══════════════════════════════════════════
+         INPUT FIELD STYLE
+    ══════════════════════════════════════════ -->
+    <style name="TindaInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/white</item>
+        <item name="boxStrokeColor">@color/input_stroke</item>
+        <item name="boxStrokeWidth">1.5dp</item>
+        <item name="boxCornerRadiusTopStart">10dp</item>
+        <item name="boxCornerRadiusTopEnd">10dp</item>
+        <item name="boxCornerRadiusBottomStart">10dp</item>
+        <item name="boxCornerRadiusBottomEnd">10dp</item>
+        <item name="hintTextColor">@color/text_hint</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="endIconTint">@color/coral</item>
+    </style>
+
+    <!-- ══════════════════════════════════════════
+         BUTTONS
+    ══════════════════════════════════════════ -->
+
+    <!-- Primary coral filled button -->
+    <style name="TindaButton" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/coral</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="elevation">0dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- Outlined white button (Google, etc.) -->
+    <style name="TindaButtonOutlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">@color/input_stroke</item>
+        <item name="strokeWidth">1.5dp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">15sp</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="android:paddingTop">13dp</item>
+        <item name="android:paddingBottom">13dp</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="elevation">0dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="iconTint">@null</item>
+    </style>
+
+    <!-- Small coral chip button (e.g. + Sale) -->
+    <style name="TindaButtonChip" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/coral</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="cornerRadius">20dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="elevation">0dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+</resources>
