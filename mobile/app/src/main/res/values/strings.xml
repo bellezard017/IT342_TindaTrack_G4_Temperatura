@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">TindaTrack</string>
+    <string name="app_tagline">Manage Your Sari-Sari Store</string>
+
+    <!-- Login -->
+    <string name="welcome_back">Welcome Back</string>
+    <string name="sign_in_subtitle">Sign in to your TindaTrack account</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="or">Or</string>
+    <string name="continue_with_google">Continue with Google</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="register">Register</string>
+
+    <!-- Register chooser -->
+    <string name="back_to_login">Back to Login</string>
+    <string name="choose_account_type">Choose Account Type</string>
+    <string name="how_to_register">How would you like to register?</string>
+    <string name="store_owner">Store Owner</string>
+    <string name="create_a_store">Create a Store</string>
+    <string name="store_owner_desc">Register as a store owner and start tracking your sales</string>
+    <string name="staff_member">Staff Member</string>
+    <string name="join_a_store">Join a Store</string>
+    <string name="staff_member_desc">Register as staff and help manage an existing store</string>
+
+    <!-- Owner Register -->
+    <string name="create_your_store">Create Your Store</string>
+    <string name="full_name">Full Name</string>
+    <string name="store_name">Store Name</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="create_store">Create Store</string>
+    <string name="sign_up_with_google">Sign up with Google</string>
+
+    <!-- Staff Register -->
+    <string name="join_store">Join a Store</string>
+    <string name="store_code">Store Code</string>
+    <string name="store_code_hint">STORE-ABC123</string>
+    <string name="join_store_btn">Join Store</string>
+
+    <!-- Main / Home -->
+    <string name="home">Home</string>
+    <string name="sales">Sales</string>
+    <string name="store">Store</string>
+    <string name="profile">Profile</string>
+    <string name="todays_overview">Today\'s Overview</string>
+    <string name="add_sale">+ Sale</string>
+    <string name="todays_sales">Today\'s\nSales</string>
+    <string name="transactions">Transactions</string>
+    <string name="items_sold">Items\nSold</string>
+    <string name="today">Today</string>
+    <string name="total">Total</string>
+    <string name="revenue_last_7">Revenue (Last 7 Days)</string>
+    <string name="recent_sales">Recent Sales</string>
+    <string name="top_selling">Top Selling Items</string>
+</resources>
