@@ -1,0 +1,8 @@
+*.md
+application.properties
+.env
+node_modules/
+target/
+mobile/.idea/
+mobile/build/
+*.iml
