@@ -13,7 +13,6 @@ const UsersIcon = () => (
     <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
   </svg>
 );
-
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -23,15 +22,12 @@ const GoogleIcon = () => (
   </svg>
 );
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+
 export default function StaffRegistration() {
   const navigate = useNavigate();
-
   const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    storeCode: '',
+    name: '', email: '', password: '', confirmPassword: '', storeCode: '',
   });
   const [error, setError]     = useState('');
   const [loading, setLoading] = useState(false);
@@ -41,24 +37,18 @@ export default function StaffRegistration() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const validatePassword = (password) => {
-    return (
-      password.length >= 8 &&
-      /[A-Z]/.test(password) &&
-      /[a-z]/.test(password) &&
-      /\d/.test(password) &&
-      /[@$!%*?&]/.test(password)
-    );
-  };
+  const validatePassword = (p) =>
+    p.length >= 8 && /[A-Z]/.test(p) && /[a-z]/.test(p) &&
+    /\d/.test(p) && /[@$!%*?&]/.test(p);
 
   const validate = () => {
-    if (!form.name.trim())                        return 'Full name is required.';
-    if (!form.email.trim())                       return 'Email is required.';
-    if (!/\S+@\S+\.\S+/.test(form.email))         return 'Enter a valid email address.';
-    if (form.password.length < 8)                 return 'Password must be at least 8 characters.';
-    if (!validatePassword(form.password))         return 'Password must contain: uppercase (A-Z), lowercase (a-z), numbers (0-9), and special characters (!@#$%^&*)';
-    if (form.password !== form.confirmPassword)   return 'Passwords do not match.';
-    if (!form.storeCode.trim())                   return 'Store code is required.';
+    if (!form.name.trim())                      return 'Full name is required.';
+    if (!form.email.trim())                     return 'Email is required.';
+    if (!/\S+@\S+\.\S+/.test(form.email))       return 'Enter a valid email address.';
+    if (form.password.length < 8)               return 'Password must be at least 8 characters.';
+    if (!validatePassword(form.password))       return 'Password must contain: uppercase (A-Z), lowercase (a-z), numbers (0-9), and special characters (!@#$%^&*)';
+    if (form.password !== form.confirmPassword) return 'Passwords do not match.';
+    if (!form.storeCode.trim())                 return 'Store code is required.';
     return null;
   };
 
@@ -66,7 +56,6 @@ export default function StaffRegistration() {
     e.preventDefault();
     const validationError = validate();
     if (validationError) { setError(validationError); return; }
-
     setLoading(true);
     setError('');
     try {
@@ -91,20 +80,16 @@ export default function StaffRegistration() {
     }
   };
 
-  // Save intent so Dashboard knows to redirect to setup-staff after OAuth
   const handleGoogleSignup = () => {
-    sessionStorage.setItem('oauth_intent', 'staff');
-    window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/auth/oauth/google/login`;
+    // Use full redirect for OAuth with "staff" intent - no popup needed
+    window.location.href = `${API_BASE}/auth/oauth/google/login?state=staff`;
   };
 
   return (
     <div className="reg-form-page">
       <div className="reg-form-card">
 
-        <div className="reg-form-logo">
-          <UsersIcon />
-        </div>
-
+        <div className="reg-form-logo"><UsersIcon /></div>
         <h2>Join a Store</h2>
         <p className="sub">Register as staff member</p>
 
@@ -119,7 +104,6 @@ export default function StaffRegistration() {
               value={form.name} onChange={handleChange}
             />
           </div>
-
           <div className="field">
             <label htmlFor="email">Email</label>
             <input
@@ -128,29 +112,16 @@ export default function StaffRegistration() {
               value={form.email} onChange={handleChange}
             />
           </div>
-
           <PasswordField
-            id="password"
-            name="password"
-            label="Password"
-            placeholder="••••••••"
-            autoComplete="new-password"
-            value={form.password}
-            onChange={handleChange}
-            error={!!error}
+            id="password" name="password" label="Password"
+            placeholder="••••••••" autoComplete="new-password"
+            value={form.password} onChange={handleChange} error={!!error}
           />
-
           <PasswordField
-            id="confirmPassword"
-            name="confirmPassword"
-            label="Confirm Password"
-            placeholder="••••••••"
-            autoComplete="new-password"
-            value={form.confirmPassword}
-            onChange={handleChange}
-            error={!!error}
+            id="confirmPassword" name="confirmPassword" label="Confirm Password"
+            placeholder="••••••••" autoComplete="new-password"
+            value={form.confirmPassword} onChange={handleChange} error={!!error}
           />
-
           <div className="field">
             <label htmlFor="storeCode">Store Code</label>
             <input
@@ -161,22 +132,16 @@ export default function StaffRegistration() {
             />
             <p className="field-hint">Ask your store owner for the store code</p>
           </div>
-
           <button type="submit" className="btn-submit" disabled={loading}>
             {loading ? <><span className="spinner" /> Joining store…</> : 'Join Store'}
           </button>
         </form>
 
         <div className="divider">Or</div>
-
         <button className="btn-google" onClick={handleGoogleSignup} type="button">
-          <GoogleIcon />
-          Sign up with Google
+          <GoogleIcon /> Sign up with Google
         </button>
-
-        <Link to="/register" className="back-link">
-          ← Back to registration options
-        </Link>
+        <Link to="/register" className="back-link">← Back to registration options</Link>
 
       </div>
     </div>

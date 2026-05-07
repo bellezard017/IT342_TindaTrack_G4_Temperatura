@@ -10,7 +10,6 @@ const StoreIcon = () => (
     <rect x="9" y="14" width="6" height="7" rx="1" fill="white" opacity="0.65"/>
   </svg>
 );
-
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -20,15 +19,12 @@ const GoogleIcon = () => (
   </svg>
 );
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+
 export default function OwnerRegistration() {
   const navigate = useNavigate();
-
   const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    storeName: '',
+    name: '', email: '', password: '', confirmPassword: '', storeName: '',
   });
   const [error, setError]     = useState('');
   const [loading, setLoading] = useState(false);
@@ -38,26 +34,18 @@ export default function OwnerRegistration() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const validatePassword = (password) => {
-    const minLength = password.length >= 8;
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumbers = /\d/.test(password);
-    const hasSpecialChar = /[@$!%*?&]/.test(password);
-
-    return minLength && hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar;
-  };
+  const validatePassword = (p) =>
+    p.length >= 8 && /[A-Z]/.test(p) && /[a-z]/.test(p) &&
+    /\d/.test(p) && /[@$!%*?&]/.test(p);
 
   const validate = () => {
-    if (!form.name.trim())        return 'Full name is required.';
-    if (!form.email.trim())       return 'Email is required.';
-    if (!/\S+@\S+\.\S+/.test(form.email)) return 'Enter a valid email address.';
-    if (form.password.length < 8) return 'Password must be at least 8 characters.';
-    if (!validatePassword(form.password)) {
-      return 'Password must contain: uppercase (A-Z), lowercase (a-z), numbers (0-9), and special characters (!@#$%^&*)';
-    }
+    if (!form.name.trim())                      return 'Full name is required.';
+    if (!form.email.trim())                     return 'Email is required.';
+    if (!/\S+@\S+\.\S+/.test(form.email))       return 'Enter a valid email address.';
+    if (form.password.length < 8)               return 'Password must be at least 8 characters.';
+    if (!validatePassword(form.password))       return 'Password must contain: uppercase (A-Z), lowercase (a-z), numbers (0-9), and special characters (!@#$%^&*)';
     if (form.password !== form.confirmPassword) return 'Passwords do not match.';
-    if (!form.storeName.trim())   return 'Store name is required.';
+    if (!form.storeName.trim())                 return 'Store name is required.';
     return null;
   };
 
@@ -65,10 +53,8 @@ export default function OwnerRegistration() {
     e.preventDefault();
     const validationError = validate();
     if (validationError) { setError(validationError); return; }
-
     setLoading(true);
     setError('');
-
     try {
       const data = await registerApi.registerOwner({
         name:            form.name,
@@ -77,34 +63,30 @@ export default function OwnerRegistration() {
         confirmPassword: form.confirmPassword,
         storeName:       form.storeName,
       });
-
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       navigate('/dashboard');
     } catch (err) {
-      const msg =
+      setError(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Registration failed. Please try again.';
-      setError(msg);
+        'Registration failed. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleSignup = () => {
-    window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/auth/oauth/google/login`;
+    // Use full redirect for OAuth with "owner" intent - no popup needed
+    window.location.href = `${API_BASE}/auth/oauth/google/login?state=owner`;
   };
 
   return (
     <div className="reg-form-page">
       <div className="reg-form-card">
 
-        {/* Logo */}
-        <div className="reg-form-logo">
-          <StoreIcon />
-        </div>
-
+        <div className="reg-form-logo"><StoreIcon /></div>
         <h2>Create Your Store</h2>
         <p className="sub">Register as a store owner</p>
 
@@ -114,79 +96,48 @@ export default function OwnerRegistration() {
           <div className="field">
             <label htmlFor="name">Full Name</label>
             <input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Juan Dela Cruz"
-              autoComplete="name"
-              value={form.name}
-              onChange={handleChange}
+              id="name" name="name" type="text"
+              placeholder="Juan Dela Cruz" autoComplete="name"
+              value={form.name} onChange={handleChange}
               className={error && !form.name ? 'error-input' : ''}
             />
           </div>
-
           <div className="field">
             <label htmlFor="email">Email</label>
             <input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="your@email.com"
-              autoComplete="email"
-              value={form.email}
-              onChange={handleChange}
+              id="email" name="email" type="email"
+              placeholder="your@email.com" autoComplete="email"
+              value={form.email} onChange={handleChange}
             />
           </div>
-
           <PasswordField
-            id="password"
-            name="password"
-            label="Password"
-            placeholder="••••••••"
-            autoComplete="new-password"
-            value={form.password}
-            onChange={handleChange}
-            error={!!error}
+            id="password" name="password" label="Password"
+            placeholder="••••••••" autoComplete="new-password"
+            value={form.password} onChange={handleChange} error={!!error}
           />
-
           <PasswordField
-            id="confirmPassword"
-            name="confirmPassword"
-            label="Confirm Password"
-            placeholder="••••••••"
-            autoComplete="new-password"
-            value={form.confirmPassword}
-            onChange={handleChange}
-            error={!!error}
+            id="confirmPassword" name="confirmPassword" label="Confirm Password"
+            placeholder="••••••••" autoComplete="new-password"
+            value={form.confirmPassword} onChange={handleChange} error={!!error}
           />
-
           <div className="field">
             <label htmlFor="storeName">Store Name</label>
             <input
-              id="storeName"
-              name="storeName"
-              type="text"
+              id="storeName" name="storeName" type="text"
               placeholder="Tindahan ni Juan"
-              value={form.storeName}
-              onChange={handleChange}
+              value={form.storeName} onChange={handleChange}
             />
           </div>
-
           <button type="submit" className="btn-submit" disabled={loading}>
             {loading ? <><span className="spinner" /> Creating store…</> : 'Create Store'}
           </button>
         </form>
 
         <div className="divider">Or</div>
-
         <button className="btn-google" onClick={handleGoogleSignup} type="button">
-          <GoogleIcon />
-          Sign up with Google
+          <GoogleIcon /> Sign up with Google
         </button>
-
-        <Link to="/register" className="back-link">
-          ← Back to registration options
-        </Link>
+        <Link to="/register" className="back-link">← Back to registration options</Link>
 
       </div>
     </div>
