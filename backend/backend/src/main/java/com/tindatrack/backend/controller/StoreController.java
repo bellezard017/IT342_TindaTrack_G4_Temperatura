@@ -2,8 +2,10 @@ package com.tindatrack.backend.controller;
 
 import com.tindatrack.backend.dto.StoreJoinRequest;
 import com.tindatrack.backend.dto.StoreSetupRequest;
+import com.tindatrack.backend.model.ActivityLog;
 import com.tindatrack.backend.model.User;
 import com.tindatrack.backend.repository.UserRepository;
+import com.tindatrack.backend.service.ActivityLogService;
 import com.tindatrack.backend.service.StoreService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -14,58 +16,94 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/store")
+@RequestMapping("/api/store")   
 public class StoreController {
 
     private final StoreService storeService;
     private final UserRepository userRepository;
+    private final ActivityLogService activityLogService;
 
-    public StoreController(StoreService storeService, UserRepository userRepository) {
-        this.storeService = storeService;
-        this.userRepository = userRepository;
+    public StoreController(StoreService storeService,
+                           UserRepository userRepository,
+                           ActivityLogService activityLogService) {
+        this.storeService        = storeService;
+        this.userRepository      = userRepository;
+        this.activityLogService  = activityLogService;
     }
 
     @PostMapping("/setup")
-    public ResponseEntity<User> setupStore(@Valid @RequestBody StoreSetupRequest request,
-                                           Authentication authentication) {
-        if (authentication == null || authentication.getName() == null) {
-            return ResponseEntity.status(401).build();
-        }
+    public ResponseEntity<User> setupStore(
+            @Valid @RequestBody StoreSetupRequest request,
+            Authentication authentication) {
 
-        User user = storeService.setupStoreByEmail(authentication.getName(), request.getStoreName());
+        if (authentication == null || authentication.getName() == null)
+            return ResponseEntity.status(401).build();
+
+        User user = storeService.setupStoreByEmail(
+                authentication.getName(), request.getStoreName());
         return ResponseEntity.ok(user);
     }
 
     @PostMapping("/join")
-    public ResponseEntity<User> joinStore(@Valid @RequestBody StoreJoinRequest request,
-                                          Authentication authentication) {
-        if (authentication == null || authentication.getName() == null) {
-            return ResponseEntity.status(401).build();
-        }
+    public ResponseEntity<User> joinStore(
+            @Valid @RequestBody StoreJoinRequest request,
+            Authentication authentication) {
 
-        User user = storeService.joinStoreByEmail(authentication.getName(), request.getStoreCode());
+        if (authentication == null || authentication.getName() == null)
+            return ResponseEntity.status(401).build();
+
+        User user = storeService.joinStoreByEmail(
+                authentication.getName(), request.getStoreCode());
         return ResponseEntity.ok(user);
     }
 
     @GetMapping("/team")
     public ResponseEntity<List<User>> getStoreTeam(Authentication authentication) {
-        if (authentication == null || authentication.getName() == null) {
+        if (authentication == null || authentication.getName() == null)
             return ResponseEntity.status(401).build();
-        }
 
         User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found."));
 
-        if (user.getStoreId() == null) {
+        if (user.getStoreId() == null)
             return ResponseEntity.ok(List.of());
-        }
 
         List<User> storeUsers = storeService.getStoreUsers(user.getStoreId());
         return ResponseEntity.ok(storeUsers.stream()
-                .map(member -> {
-                    member.setPassword(null);
-                    return member;
-                })
+                .map(member -> { member.setPassword(null); return member; })
                 .collect(Collectors.toList()));
+    }
+
+    @DeleteMapping("/members/{memberId}")
+    public ResponseEntity<?> removeMember(
+            @PathVariable Long memberId,
+            Authentication authentication) {
+
+        if (authentication == null || authentication.getName() == null)
+            return ResponseEntity.status(401).build();
+
+        User requester = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found."));
+
+        if (!"OWNER".equalsIgnoreCase(requester.getRole()))
+            return ResponseEntity.status(403).body("Only store owners can remove members.");
+
+        
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/activity")
+    public ResponseEntity<List<ActivityLog>> getActivity(Authentication authentication) {
+        if (authentication == null || authentication.getName() == null)
+            return ResponseEntity.status(401).build();
+
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found."));
+
+        if (user.getStoreId() == null)
+            return ResponseEntity.ok(List.of());
+
+        List<ActivityLog> logs = activityLogService.getRecentByStore(user.getStoreId());
+        return ResponseEntity.ok(logs);
     }
 }
