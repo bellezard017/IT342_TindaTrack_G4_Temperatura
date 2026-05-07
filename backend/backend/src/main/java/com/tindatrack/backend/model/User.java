@@ -3,15 +3,11 @@ package com.tindatrack.backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class User {
 
     @Id
@@ -46,4 +42,9 @@ public class User {
 
     @Column(columnDefinition = "TEXT")
     private String avatarUrl;
+
+    @Column(length = 255)
+    private String googleId;
+
+    private Boolean isOAuthUser = false;
 }

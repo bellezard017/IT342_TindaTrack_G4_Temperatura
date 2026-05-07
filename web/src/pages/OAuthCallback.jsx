@@ -1,25 +1,28 @@
 import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
-    // Get URL parameters
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
     const userName = params.get('user');
     const error = params.get('error');
 
     if (error) {
-      console.error('OAuth Error:', error);
-      navigate('/login?error=' + encodeURIComponent('Google login failed: ' + error));
+      console.error('[OAuth] Error:', error);
+      const errorMsg = error === 'auth_failed' 
+        ? 'Google authentication failed on the backend. Please check the backend logs.' 
+        : 'Google authentication failed: ' + error;
+      navigate('/login?error=' + encodeURIComponent(errorMsg));
       return;
     }
 
     if (!token) {
-      console.error('No token received from OAuth');
+      console.error('[OAuth] No token received');
       navigate('/login?error=' + encodeURIComponent('OAuth authentication failed'));
       return;
     }
@@ -27,37 +30,46 @@ export default function OAuthCallback() {
     try {
       // Store token in localStorage
       localStorage.setItem('token', token);
+      console.log('[OAuth] Token stored, fetching user info...');
       
-      // Fetch user info from API
-      fetch('http://localhost:8080/api/auth/me', {
+      // Fetch user info from API using the token
+      fetch(`${API_BASE}/auth/me`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then(user => {
+        console.log('[OAuth] User info fetched:', user);
         localStorage.setItem('user', JSON.stringify(user));
         
-        // Check if user needs to set up a store
-        if (user.role === 'OWNER' && (!user.storeId || user.storeId === 0)) {
-          // Redirect to store setup
-          navigate('/setup-store');
-        } else if (!user.storeId || user.storeId === 0) {
-          // Redirect to staff setup
-          navigate('/setup-staff');
+        // Redirect based on user setup status
+        if (!user.storeId || user.storeId === 0) {
+          // User needs to set up a store
+          if (user.role === 'OWNER') {
+            console.log('[OAuth] Redirecting OWNER to /setup-store');
+            navigate('/setup-store');
+          } else {
+            console.log('[OAuth] Redirecting STAFF to /setup-staff');
+            navigate('/setup-staff');
+          }
         } else {
-          // Redirect to dashboard
+          // User has a store, go to dashboard
+          console.log('[OAuth] Redirecting to /dashboard');
           navigate('/dashboard');
         }
       })
       .catch(err => {
-        console.error('Failed to fetch user info:', err);
-        // Still save basic user info and redirect
-        localStorage.setItem('user', JSON.stringify({ name: userName, role: 'OWNER' }));
-        navigate('/setup-store');
+        console.error('[OAuth] Error fetching user info:', err);
+        // If we can't fetch user info, still try to navigate based on token
+        navigate('/dashboard');
       });
     } catch (err) {
-      console.error('OAuth callback error:', err);
+      console.error('[OAuth] Callback error:', err);
       navigate('/login?error=' + encodeURIComponent('Authentication error'));
     }
   }, [navigate]);
@@ -69,11 +81,12 @@ export default function OAuthCallback() {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      minHeight: '100vh'
+      minHeight: '100vh',
+      fontFamily: 'Plus Jakarta Sans, sans-serif'
     }}>
       <div>
         <h2>Completing Authentication...</h2>
-        <p>Please wait while we complete your Google login.</p>
+        <p>Please wait while we complete your Google authentication.</p>
       </div>
     </div>
   );

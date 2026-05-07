@@ -18,15 +18,18 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final StoreService storeService;
+    private final EmailService emailService;
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        JwtUtil jwtUtil,
-                       StoreService storeService) {
-        this.userRepository = userRepository;
+                       StoreService storeService,
+                       EmailService emailService) {
+        this.userRepository  = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
-        this.storeService = storeService;
+        this.jwtUtil         = jwtUtil;
+        this.storeService    = storeService;
+        this.emailService    = emailService;
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -35,7 +38,8 @@ public class AuthService {
             throw new RuntimeException("Email already exists");
         }
 
-        if (request.getConfirmPassword() == null || !request.getPassword().equals(request.getConfirmPassword())) {
+        if (request.getConfirmPassword() == null ||
+                !request.getPassword().equals(request.getConfirmPassword())) {
             throw new RuntimeException("Passwords do not match");
         }
 
@@ -43,7 +47,9 @@ public class AuthService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        String normalizedRole = request.getRole() == null ? "USER" : request.getRole().trim().toUpperCase();
+        String normalizedRole = request.getRole() == null
+                ? "USER"
+                : request.getRole().trim().toUpperCase();
         user.setRole(normalizedRole);
         user.setCreatedAt(LocalDateTime.now());
 
@@ -64,8 +70,17 @@ public class AuthService {
             if (request.getStoreCode() == null || request.getStoreCode().isBlank()) {
                 throw new RuntimeException("Store code is required for staff registration.");
             }
-            savedUser = storeService.joinStoreByEmail(savedUser.getEmail(), request.getStoreCode().trim().toUpperCase());
+            savedUser = storeService.joinStoreByEmail(
+                    savedUser.getEmail(),
+                    request.getStoreCode().trim().toUpperCase());
         }
+
+        emailService.sendWelcomeEmail(
+                savedUser.getEmail(),
+                savedUser.getName(),
+                savedUser.getStoreName(),
+                savedUser.getRole()
+        );
 
         String token = jwtUtil.generateToken(savedUser.getEmail());
         return new AuthResponse(token, savedUser);
@@ -91,4 +106,4 @@ public class AuthService {
         storeService.enrichUserStore(user);
         return user;
     }
-}
+}  

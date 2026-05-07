@@ -34,23 +34,28 @@ public class GoogleOAuthService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final StoreService storeService;
+    private final EmailService emailService;
     private final Gson gson;
     private final HttpClient httpClient;
 
-    public GoogleOAuthService(UserRepository userRepository, JwtUtil jwtUtil, StoreService storeService) {
+    public GoogleOAuthService(UserRepository userRepository,
+                               JwtUtil jwtUtil,
+                               StoreService storeService,
+                               EmailService emailService) {
         this.userRepository = userRepository;
-        this.jwtUtil = jwtUtil;
-        this.storeService = storeService;
-        this.gson = new Gson();
-        this.httpClient = HttpClient.newHttpClient();
+        this.jwtUtil        = jwtUtil;
+        this.storeService   = storeService;
+        this.emailService   = emailService;
+        this.gson           = new Gson();
+        this.httpClient     = HttpClient.newHttpClient();
     }
 
-    /**
-     * Generate Google OAuth authorization URL
-     */
-    public String getGoogleAuthorizationUrl() {
-        String scope = URLEncoder.encode("openid email profile", StandardCharsets.UTF_8);
+    public String getGoogleAuthorizationUrl(String state) {
+        String scope              = URLEncoder.encode("openid email profile", StandardCharsets.UTF_8);
         String redirectUriEncoded = URLEncoder.encode(redirectUri, StandardCharsets.UTF_8);
+        String stateParam         = (state != null && !state.isBlank())
+                ? "&state=" + URLEncoder.encode(state, StandardCharsets.UTF_8)
+                : "";
 
         return "https://accounts.google.com/o/oauth2/v2/auth?" +
                 "client_id=" + clientId +
@@ -58,43 +63,36 @@ public class GoogleOAuthService {
                 "&response_type=code" +
                 "&scope=" + scope +
                 "&access_type=offline" +
-                "&prompt=consent";
+                "&prompt=consent" +
+                stateParam;
     }
 
-    /**
-     * Exchange authorization code for Google access token
-     */
     public GoogleTokenResponse exchangeCodeForToken(String code)
             throws IOException, InterruptedException {
 
-        String requestBody =
-                "code=" + URLEncoder.encode(code, StandardCharsets.UTF_8) +
-                "&client_id=" + URLEncoder.encode(clientId, StandardCharsets.UTF_8) +
-                "&client_secret=" + URLEncoder.encode(clientSecret, StandardCharsets.UTF_8) +
-                "&redirect_uri=" + URLEncoder.encode(redirectUri, StandardCharsets.UTF_8) +
+        String body =
+                "code="           + URLEncoder.encode(code,          StandardCharsets.UTF_8) +
+                "&client_id="     + URLEncoder.encode(clientId,      StandardCharsets.UTF_8) +
+                "&client_secret=" + URLEncoder.encode(clientSecret,  StandardCharsets.UTF_8) +
+                "&redirect_uri="  + URLEncoder.encode(redirectUri,   StandardCharsets.UTF_8) +
                 "&grant_type=authorization_code";
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://oauth2.googleapis.com/token"))
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
 
         HttpResponse<String> response =
                 httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != 200) {
-            throw new RuntimeException(
-                "Failed to exchange code for token. Status: "
-                + response.statusCode() + " Body: " + response.body());
+            throw new RuntimeException("Token exchange failed: " + response.body());
         }
 
         return gson.fromJson(response.body(), GoogleTokenResponse.class);
     }
 
-    /**
-     * Get user info from Google using access token
-     */
     public GoogleUserInfo getUserInfo(String accessToken)
             throws IOException, InterruptedException {
 
@@ -108,49 +106,65 @@ public class GoogleOAuthService {
                 httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != 200) {
-            throw new RuntimeException(
-                "Failed to get user info from Google. Status: "
-                + response.statusCode() + " Body: " + response.body());
+            throw new RuntimeException("Get user info failed: " + response.body());
         }
 
         return gson.fromJson(response.body(), GoogleUserInfo.class);
     }
 
-    /**
-     * Full OAuth flow: exchange code → get user info → find/create user → return JWT
-     */
-    public AuthResponse authenticateGoogleUser(String code)
+    public AuthResponse authenticateGoogleUser(String code, String intent)
             throws IOException, InterruptedException {
 
-        // 1. Exchange code for tokens
         GoogleTokenResponse tokenResponse = exchangeCodeForToken(code);
+        GoogleUserInfo googleUserInfo     = getUserInfo(tokenResponse.getAccess_token());
 
-        // 2. Get user info from Google
-        GoogleUserInfo userInfo = getUserInfo(tokenResponse.getAccess_token());
+        String googleId = googleUserInfo.getSub();
+        String email    = googleUserInfo.getEmail();
 
-        // 3. Find existing user or create new one
-        User user = userRepository.findByEmail(userInfo.getEmail())
-                .orElseGet(() -> createNewGoogleUser(userInfo));
+        // First try to find by Google ID, then by email
+        User user = userRepository.findByGoogleId(googleId).orElse(null);
+        
+        if (user == null) {
+            user = userRepository.findByEmail(email).orElse(null);
+        }
 
-        // 4. Enrich user with store data
-        storeService.enrichUserStore(user);
+        boolean isNewUser = (user == null);
 
-        // 5. Generate JWT
+        if (isNewUser) {
+            // Create new user - respect the intent parameter for role
+            user = new User();
+            user.setName(googleUserInfo.getName());
+            user.setEmail(googleUserInfo.getEmail());
+            user.setPassword("OAUTH_NO_PASSWORD");
+            user.setGoogleId(googleId);
+            user.setIsOAuthUser(true);
+            user.setCreatedAt(LocalDateTime.now());
+            // Set role based on intent: if "staff", set STAFF, otherwise default to OWNER
+            user.setRole("staff".equalsIgnoreCase(intent) ? "STAFF" : "OWNER");
+            user = userRepository.save(user);
+            
+            // Send welcome email for new users
+            emailService.sendWelcomeEmail(
+                    user.getEmail(),
+                    user.getName(),
+                    user.getStoreName() != null ? user.getStoreName() : "Your Store",
+                    user.getRole()
+            );
+            System.out.println("[GoogleOAuth] New user created: " + email + " with role: " + user.getRole());
+        } else {
+            // Existing user - link Google ID if not already linked
+            if (user.getGoogleId() == null) {
+                user.setGoogleId(googleId);
+                user.setIsOAuthUser(true);
+                user = userRepository.save(user);
+                System.out.println("[GoogleOAuth] Linked Google ID to existing user: " + email);
+            }
+            // Enrich store information for existing users
+            storeService.enrichUserStore(user);
+            System.out.println("[GoogleOAuth] Logged in existing user: " + email + " with role: " + user.getRole());
+        }
+
         String jwtToken = jwtUtil.generateToken(user.getEmail());
-
         return new AuthResponse(jwtToken, user);
-    }
-
-    /**
-     * Create a new user from Google profile info
-     */
-    private User createNewGoogleUser(GoogleUserInfo googleUserInfo) {
-        User user = new User();
-        user.setName(googleUserInfo.getName());
-        user.setEmail(googleUserInfo.getEmail());
-        user.setPassword("OAUTH_GOOGLE_USER"); // no password for OAuth users
-        user.setRole("OWNER");                 // default role — adjust as needed
-        user.setCreatedAt(LocalDateTime.now());
-        return userRepository.save(user);
     }
 }

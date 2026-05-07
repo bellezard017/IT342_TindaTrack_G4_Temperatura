@@ -4,14 +4,12 @@ import { authApi } from '../api/authApi';
 import PasswordField from '../components/PasswordField';
 import '../styles/Login.css';
 
-/* ── SVG Icons ── */
 const HomeIcon = () => (
   <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M3 9.5L12 3l9 6.5V21H3V9.5z" fill="white" opacity="0.95"/>
     <rect x="9" y="14" width="6" height="7" rx="1" fill="white" opacity="0.55"/>
   </svg>
 );
-
 const TrendIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
     stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -19,7 +17,6 @@ const TrendIcon = () => (
     <polyline points="16 7 22 7 22 13"/>
   </svg>
 );
-
 const UsersIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
     stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -29,14 +26,12 @@ const UsersIcon = () => (
     <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
   </svg>
 );
-
 const ShieldIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
     stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
   </svg>
 );
-
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -47,22 +42,12 @@ const GoogleIcon = () => (
 );
 
 const FEATURES = [
-  {
-    icon: <TrendIcon />,
-    title: 'Sales Analytics',
-    desc: 'Track daily sales and view detailed analytics with interactive charts',
-  },
-  {
-    icon: <UsersIcon />,
-    title: 'Team Management',
-    desc: 'Add staff members and manage permissions with role-based access',
-  },
-  {
-    icon: <ShieldIcon />,
-    title: 'Secure & Reliable',
-    desc: 'Your data is safe with secure authentication and cloud backup',
-  },
+  { icon: <TrendIcon />,  title: 'Sales Analytics',   desc: 'Track daily sales and view detailed analytics with interactive charts' },
+  { icon: <UsersIcon />,  title: 'Team Management',   desc: 'Add staff members and manage permissions with role-based access' },
+  { icon: <ShieldIcon />, title: 'Secure & Reliable', desc: 'Your data is safe with secure authentication and cloud backup' },
 ];
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -99,33 +84,21 @@ export default function Login() {
     }
   };
 
-  // Matches backend: GET /api/auth/oauth/google/login
   const handleGoogleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/auth/oauth/google/login`;
+    // Use full redirect instead of popup for proper OAuth handshake
+    window.location.href = `${API_BASE}/auth/oauth/google/login`;
   };
 
   return (
     <div className="login-page">
 
-      {/* ══ LEFT PANEL ══ */}
       <div className="login-left">
-
-        {/* Logo */}
         <div className="logo-row">
-          <div className="logo-icon">
-            <HomeIcon />
-          </div>
+          <div className="logo-icon"><HomeIcon /></div>
           <span className="logo-name">TindaTrack</span>
         </div>
-
-        {/* Hero + Features — centered vertically */}
         <div className="hero-text">
-          <h1>
-            Manage Your<br />
-            Sari-Sari Store<br />
-            With Ease
-          </h1>
-
+          <h1>Manage Your<br />Sari-Sari Store<br />With Ease</h1>
           <div className="feature-list">
             {FEATURES.map((f) => (
               <div className="feature-item" key={f.title}>
@@ -138,13 +111,10 @@ export default function Login() {
             ))}
           </div>
         </div>
-
       </div>
 
-      {/* ══ RIGHT PANEL ══ */}
       <div className="login-right">
         <div className="login-card">
-
           <h2>Welcome Back</h2>
           <p className="sub">Sign in to your TindaTrack account</p>
 
@@ -160,18 +130,11 @@ export default function Login() {
                 className={error ? 'error-input' : ''}
               />
             </div>
-
             <PasswordField
-              id="password"
-              name="password"
-              label="Password"
-              placeholder="••••••••"
-              autoComplete="current-password"
-              value={form.password}
-              onChange={handleChange}
-              error={!!error}
+              id="password" name="password" label="Password"
+              placeholder="••••••••" autoComplete="current-password"
+              value={form.password} onChange={handleChange} error={!!error}
             />
-
             <button type="submit" className="btn-login" disabled={loading}>
               {loading ? <><span className="spinner" /> Signing in…</> : 'Login'}
             </button>
@@ -187,7 +150,6 @@ export default function Login() {
           <p className="register-link">
             Don't have an account? <Link to="/register">Register</Link>
           </p>
-
         </div>
       </div>
 
