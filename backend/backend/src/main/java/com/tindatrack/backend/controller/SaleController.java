@@ -24,18 +24,22 @@ public class SaleController {
     private final UserRepository userRepository;
     private final StoreService storeService;
 
-    public SaleController(SaleService saleService, UserRepository userRepository, StoreService storeService) {
-        this.saleService = saleService;
+    public SaleController(SaleService saleService,
+                          UserRepository userRepository,
+                          StoreService storeService) {
+        this.saleService    = saleService;
         this.userRepository = userRepository;
-        this.storeService = storeService;
+        this.storeService   = storeService;
     }
 
     @PostMapping("/sales")
-    public ResponseEntity<SaleResponse> createSale(@Valid @RequestBody SaleRequest request,
-                                                   Authentication authentication) {
+    public ResponseEntity<SaleResponse> createSale(
+            @Valid @RequestBody SaleRequest request,
+            Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
         storeService.enrichUserStore(user);
-        SaleResponse response = saleService.mapToResponse(saleService.createSale(user, request));
+        SaleResponse response = saleService.mapToResponse(
+                saleService.createSale(user, request));
         return ResponseEntity.ok(response);
     }
 
@@ -43,7 +47,8 @@ public class SaleController {
     public ResponseEntity<List<SaleResponse>> getSales(Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
         storeService.enrichUserStore(user);
-        List<SaleResponse> responses = saleService.getSalesForStore(user.getStoreId())
+        List<SaleResponse> responses = saleService
+                .getSalesForStore(user.getStoreId())
                 .stream()
                 .map(saleService::mapToResponse)
                 .collect(Collectors.toList());
@@ -51,8 +56,11 @@ public class SaleController {
     }
 
     @GetMapping("/sales/{id}")
-    public ResponseEntity<SaleResponse> getSaleById(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<SaleResponse> getSaleById(
+            @PathVariable Long id,
+            Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
+        storeService.enrichUserStore(user);
         Sale sale = saleService.getSaleById(id);
         if (!sale.getStoreId().equals(user.getStoreId())) {
             return ResponseEntity.status(403).build();
@@ -61,16 +69,31 @@ public class SaleController {
     }
 
     @PutMapping("/sales/{id}")
-    public ResponseEntity<SaleResponse> updateSale(@PathVariable Long id,
-                                                   @Valid @RequestBody SaleRequest request,
-                                                   Authentication authentication) {
+    public ResponseEntity<SaleResponse> updateSale(
+            @PathVariable Long id,
+            @Valid @RequestBody SaleRequest request,
+            Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
+        storeService.enrichUserStore(user);
         Sale sale = saleService.getSaleById(id);
         if (!sale.getStoreId().equals(user.getStoreId())) {
             return ResponseEntity.status(403).build();
         }
-        Sale updatedSale = saleService.updateSale(id, request);
+        Sale updatedSale = saleService.updateSale(id, request, user);
         return ResponseEntity.ok(saleService.mapToResponse(updatedSale));
+    }
+
+    @DeleteMapping("/sales/{id}")
+    public ResponseEntity<Void> deleteSale(
+            @PathVariable Long id,
+            Authentication authentication) {
+        User user = getAuthenticatedUser(authentication);
+        storeService.enrichUserStore(user);
+        if (!"OWNER".equalsIgnoreCase(user.getRole())) {
+            return ResponseEntity.status(403).build();
+        }
+        saleService.deleteSale(id, user);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/dashboard")
@@ -79,19 +102,6 @@ public class SaleController {
         storeService.enrichUserStore(user);
         DashboardResponse dashboard = saleService.getDashboardForStore(user.getStoreId());
         return ResponseEntity.ok(dashboard);
-    }
-
-    @DeleteMapping("/sales/{id}")
-    public ResponseEntity<Void> deleteSale(@PathVariable Long id, Authentication authentication) {
-        User user = getAuthenticatedUser(authentication);
-
-        // Only OWNER role can delete sales
-        if (!"OWNER".equalsIgnoreCase(user.getRole())) {
-            return ResponseEntity.status(403).build();
-        }
-
-        saleService.deleteSale(id);
-        return ResponseEntity.noContent().build();
     }
 
     private User getAuthenticatedUser(Authentication authentication) {

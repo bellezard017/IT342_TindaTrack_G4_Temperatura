@@ -19,15 +19,15 @@ const CATEGORIES = [
 
 /* Category badge colors */
 const CATEGORY_COLORS = {
-  'Beverages':     { bg: '#DBEAFE', color: '#2563EB' },
+  'Beverages':      { bg: '#DBEAFE', color: '#2563EB' },
   'Instant Noodles':{ bg: '#FEF9C3', color: '#A16207' },
-  'Canned Goods':  { bg: '#DCFCE7', color: '#16A34A' },
-  'Snacks':        { bg: '#FFE4E6', color: '#E11D48' },
-  'Cigarettes':    { bg: '#F3F4F6', color: '#374151' },
-  'Toiletries':    { bg: '#EDE9FE', color: '#7C3AED' },
-  'Condiments':    { bg: '#FDE8E3', color: '#E07A5F' },
-  'Rice & Grains': { bg: '#FEF3C7', color: '#D97706' },
-  'Other':         { bg: '#F1F5F9', color: '#64748B' },
+  'Canned Goods':   { bg: '#DCFCE7', color: '#16A34A' },
+  'Snacks':         { bg: '#FFE4E6', color: '#E11D48' },
+  'Cigarettes':     { bg: '#F3F4F6', color: '#374151' },
+  'Toiletries':     { bg: '#EDE9FE', color: '#7C3AED' },
+  'Condiments':     { bg: '#FDE8E3', color: '#E07A5F' },
+  'Rice & Grains':  { bg: '#FEF3C7', color: '#D97706' },
+  'Other':          { bg: '#F1F5F9', color: '#64748B' },
 };
 
 /* Icons */
@@ -53,23 +53,24 @@ const DeleteIcon = () => (
     <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
   </svg>
 );
-const PlusIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-    <line x1="12" y1="5" x2="12" y2="19"/>
-    <line x1="5" y1="12" x2="19" y2="12"/>
+const WarningIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="3 6 5 6 21 6"/>
+    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+    <path d="M10 11v6"/><path d="M14 11v6"/>
+    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
   </svg>
 );
 
-/* Placeholder data */
-
 export default function SalesRecords() {
-  const navigate  = useNavigate();
-  const [search, setSearch]     = useState('');
-  const [category, setCategory] = useState('All Categories');
-  const [records, setRecords]   = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState('');
+  const navigate = useNavigate();
+  const [search, setSearch]         = useState('');
+  const [category, setCategory]     = useState('All Categories');
+  const [records, setRecords]       = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [error, setError]           = useState('');
+  const [deleteModal, setDeleteModal] = useState({ open: false, id: null });
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   useEffect(() => {
@@ -94,6 +95,20 @@ export default function SalesRecords() {
     const matchSearch = r.name.toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch;
   }), [records, search, category]);
+
+  const openDeleteModal  = (id) => setDeleteModal({ open: true, id });
+  const closeDeleteModal = ()   => setDeleteModal({ open: false, id: null });
+
+  const handleDelete = async () => {
+    try {
+      await saleApi.deleteSale(deleteModal.id);
+      setRecords((prev) => prev.filter((r) => r.id !== deleteModal.id));
+      closeDeleteModal();
+    } catch {
+      closeDeleteModal();
+      alert('Failed to delete. Please try again.');
+    }
+  };
 
   let salesContent;
   if (loading) {
@@ -145,7 +160,7 @@ export default function SalesRecords() {
                       </button>
                       {user?.role === 'OWNER' && (
                         <button className="sr-btn-delete"
-                          onClick={() => handleDelete(r.id)}
+                          onClick={() => openDeleteModal(r.id)}
                           title="Delete">
                           <DeleteIcon />
                         </button>
@@ -160,16 +175,6 @@ export default function SalesRecords() {
       </div>
     );
   }
-
-  const handleDelete = async (id) => {
-    if (!globalThis.confirm('Delete this sale record?')) return;
-    try {
-      await saleApi.deleteSale(id);
-      setRecords((prev) => prev.filter((r) => r.id !== id));
-    } catch {
-      alert('Failed to delete. Please try again.');
-    }
-  };
 
   return (
     <SidebarLayout
@@ -208,6 +213,29 @@ export default function SalesRecords() {
         {/* Table */}
         {salesContent}
       </div>
+
+      {/* ── Delete Confirmation Modal ── */}
+      {deleteModal.open && (
+        <div className="dm-overlay" onClick={closeDeleteModal}>
+          <div className="dm-box" onClick={(e) => e.stopPropagation()}>
+            <div className="dm-icon-wrap">
+              <WarningIcon />
+            </div>
+            <h3 className="dm-title">Delete Sale Record?</h3>
+            <p className="dm-desc">
+              This action cannot be undone. The record will be permanently removed.
+            </p>
+            <div className="dm-actions">
+              <button className="dm-btn-cancel" onClick={closeDeleteModal}>
+                Cancel
+              </button>
+              <button className="dm-btn-confirm" onClick={handleDelete}>
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </SidebarLayout>
   );
 }
