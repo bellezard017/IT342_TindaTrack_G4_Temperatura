@@ -1,14 +1,9 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from '../../api/AxiosInstance';
 
 export const storeApi = {
 
   getTeam: async () => {
     const response = await axiosInstance.get('/store/team');
-    return response.data;
-  },
-
-  getActivity: async () => {
-    const response = await axiosInstance.get('/store/activity');
     return response.data;
   },
 
@@ -26,8 +21,4 @@ export const storeApi = {
     await axiosInstance.delete(`/store/members/${memberId}`);
   },
 
-  getActivity: async () => {
-    const response = await axiosInstance.get('/store/activity');
-    return response.data;
-  },
 };

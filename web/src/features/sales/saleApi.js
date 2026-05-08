@@ -1,4 +1,4 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from '../../api/AxiosInstance';
 
 export const saleApi = {
   // Get all sales

@@ -1,4 +1,4 @@
-package com.tindatrack.backend.controller;
+package com.tindatrack.backend.features.stores;
 
 import com.tindatrack.backend.dto.StoreJoinRequest;
 import com.tindatrack.backend.dto.StoreSetupRequest;
@@ -6,7 +6,6 @@ import com.tindatrack.backend.model.ActivityLog;
 import com.tindatrack.backend.model.User;
 import com.tindatrack.backend.repository.UserRepository;
 import com.tindatrack.backend.service.ActivityLogService;
-import com.tindatrack.backend.service.StoreService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/store")   
+@RequestMapping("/api/store")
 public class StoreController {
 
     private final StoreService storeService;
@@ -26,9 +25,9 @@ public class StoreController {
     public StoreController(StoreService storeService,
                            UserRepository userRepository,
                            ActivityLogService activityLogService) {
-        this.storeService        = storeService;
-        this.userRepository      = userRepository;
-        this.activityLogService  = activityLogService;
+        this.storeService = storeService;
+        this.userRepository = userRepository;
+        this.activityLogService = activityLogService;
     }
 
     @PostMapping("/setup")
@@ -88,7 +87,6 @@ public class StoreController {
         if (!"OWNER".equalsIgnoreCase(requester.getRole()))
             return ResponseEntity.status(403).body("Only store owners can remove members.");
 
-        
         return ResponseEntity.ok().build();
     }
 

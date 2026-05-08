@@ -3,6 +3,7 @@ package com.tindatrack.backend.service;
 import com.tindatrack.backend.dto.AuthResponse;
 import com.tindatrack.backend.dto.LoginRequest;
 import com.tindatrack.backend.dto.RegisterRequest;
+import com.tindatrack.backend.features.stores.StoreService;
 import com.tindatrack.backend.model.User;
 import com.tindatrack.backend.repository.UserRepository;
 import com.tindatrack.backend.util.JwtUtil;

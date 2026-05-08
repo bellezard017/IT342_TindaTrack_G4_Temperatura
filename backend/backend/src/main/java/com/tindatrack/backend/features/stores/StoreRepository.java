@@ -1,6 +1,5 @@
-package com.tindatrack.backend.repository;
+package com.tindatrack.backend.features.stores;
 
-import com.tindatrack.backend.model.Store;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

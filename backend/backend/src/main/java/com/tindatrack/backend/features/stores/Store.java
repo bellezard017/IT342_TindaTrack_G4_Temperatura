@@ -1,4 +1,4 @@
-package com.tindatrack.backend.model;
+package com.tindatrack.backend.features.stores;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

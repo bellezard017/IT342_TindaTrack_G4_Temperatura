@@ -1,8 +1,6 @@
-package com.tindatrack.backend.service;
+package com.tindatrack.backend.features.stores;
 
-import com.tindatrack.backend.model.Store;
 import com.tindatrack.backend.model.User;
-import com.tindatrack.backend.repository.StoreRepository;
 import com.tindatrack.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 

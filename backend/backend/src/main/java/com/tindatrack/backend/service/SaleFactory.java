@@ -1,7 +1,7 @@
 package com.tindatrack.backend.service;
 
 import com.tindatrack.backend.dto.SaleRequest;
-import com.tindatrack.backend.model.Sale;
+import com.tindatrack.backend.features.sales.Sale;
 import com.tindatrack.backend.model.User;
 
 import java.time.LocalDateTime;

@@ -9,7 +9,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from 'recharts';
-import { saleApi } from '../api/saleApi';
+import { saleApi } from '../features/sales/saleApi';
 import SidebarLayout from '../components/SidebarLayout';
 import '../styles/dashboard.css';
 

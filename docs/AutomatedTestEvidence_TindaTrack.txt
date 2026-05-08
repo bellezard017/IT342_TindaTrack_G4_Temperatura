@@ -1,0 +1,61 @@
+Automated Test Evidence - TindaTrack
+Date: May 8, 2026
+Branch: feature/vertical-slice-refactoring
+
+Backend Command
+---------------
+Working directory:
+backend/backend
+
+Command:
+cmd /c mvnw.cmd test
+
+Result:
+BUILD SUCCESS
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+
+Test Classes:
+- com.tindatrack.backend.BackendApplicationTests
+  Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+- com.tindatrack.backend.features.sales.SaleServiceTest
+  Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+- com.tindatrack.backend.features.stores.StoreServiceTest
+  Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+
+Evidence files generated locally:
+- backend/backend/target/surefire-reports/com.tindatrack.backend.BackendApplicationTests.txt
+- backend/backend/target/surefire-reports/com.tindatrack.backend.features.sales.SaleServiceTest.txt
+- backend/backend/target/surefire-reports/com.tindatrack.backend.features.stores.StoreServiceTest.txt
+
+Web Command
+-----------
+Working directory:
+web
+
+Command:
+npm run build
+
+Result:
+Vite production build completed successfully.
+Modules transformed: 770
+Output generated under web/dist/
+
+Warnings:
+- saleApi.js is dynamically imported by StoreManagement.jsx and statically imported by other sales pages, so it remains in the main chunk.
+- The production JavaScript chunk is larger than 500 kB after minification.
+
+Mobile Command
+--------------
+Working directory:
+mobile
+
+Command:
+cmd /c gradlew.bat test
+
+Result:
+BLOCKED
+
+Reason:
+The Gradle wrapper JAR is missing from mobile/gradle/wrapper, causing:
+Error: Could not find or load main class org.gradle.wrapper.GradleWrapperMain
+Caused by: java.lang.ClassNotFoundException: org.gradle.wrapper.GradleWrapperMain

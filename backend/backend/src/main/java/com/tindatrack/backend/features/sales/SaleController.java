@@ -1,13 +1,11 @@
-package com.tindatrack.backend.controller;
+package com.tindatrack.backend.features.sales;
 
 import com.tindatrack.backend.dto.DashboardResponse;
 import com.tindatrack.backend.dto.SaleRequest;
 import com.tindatrack.backend.dto.SaleResponse;
-import com.tindatrack.backend.model.Sale;
 import com.tindatrack.backend.model.User;
 import com.tindatrack.backend.repository.UserRepository;
-import com.tindatrack.backend.service.SaleService;
-import com.tindatrack.backend.service.StoreService;
+import com.tindatrack.backend.features.stores.StoreService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +25,9 @@ public class SaleController {
     public SaleController(SaleService saleService,
                           UserRepository userRepository,
                           StoreService storeService) {
-        this.saleService    = saleService;
+        this.saleService = saleService;
         this.userRepository = userRepository;
-        this.storeService   = storeService;
+        this.storeService = storeService;
     }
 
     @PostMapping("/sales")

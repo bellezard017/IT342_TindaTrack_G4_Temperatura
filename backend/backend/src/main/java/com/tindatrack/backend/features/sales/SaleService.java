@@ -1,13 +1,17 @@
-package com.tindatrack.backend.service;
+package com.tindatrack.backend.features.sales;
 
 import com.tindatrack.backend.dto.ChartDataPoint;
 import com.tindatrack.backend.dto.DashboardResponse;
 import com.tindatrack.backend.dto.SaleRequest;
 import com.tindatrack.backend.dto.SaleResponse;
 import com.tindatrack.backend.dto.TopItemResponse;
-import com.tindatrack.backend.model.Sale;
 import com.tindatrack.backend.model.User;
-import com.tindatrack.backend.repository.SaleRepository;
+import com.tindatrack.backend.service.ActivityLogService;
+import com.tindatrack.backend.service.ConfigManager;
+import com.tindatrack.backend.service.EmailService;
+import com.tindatrack.backend.service.SaleFactory;
+import com.tindatrack.backend.service.SaleNotificationService;
+import com.tindatrack.backend.service.SaleObserver;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,9 +31,9 @@ public class SaleService {
     public SaleService(SaleRepository saleRepository,
                        ActivityLogService activityLogService,
                        EmailService emailService) {
-        this.saleRepository     = saleRepository;
+        this.saleRepository = saleRepository;
         this.activityLogService = activityLogService;
-        this.emailService       = emailService;
+        this.emailService = emailService;
         this.addObserver(new SaleNotificationService());
     }
 

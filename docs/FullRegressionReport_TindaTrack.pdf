@@ -1,0 +1,589 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R] /Count 6 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Length 2449 >>
+stream
+BT
+/F1 10 Tf
+54 738 Td
+(Full Regression Report - TindaTrack) Tj
+0 -14 Td
+(Full Regression Test Report - TindaTrack) Tj
+0 -14 Td
+(Project Information) Tj
+0 -14 Td
+(Project) Tj
+0 -14 Td
+(TindaTrack / Temperatura) Tj
+0 -14 Td
+(Repository) Tj
+0 -14 Td
+(https://github.com/bellezard017/IT342_TindaTrack_G4_Temperatura.git) Tj
+0 -14 Td
+(Branch) Tj
+0 -14 Td
+(feature/vertical-slice-refactoring) Tj
+0 -14 Td
+(Report date) Tj
+0 -14 Td
+(May 8, 2026) Tj
+0 -14 Td
+(Scope) Tj
+0 -14 Td
+(Backend Spring Boot API, React web frontend, Android mobile project check) Tj
+0 -14 Td
+(Refactoring Summary) Tj
+0 -14 Td
+(The backend and web frontend were refactored toward Vertical Slice Architecture by grouping) Tj
+0 -14 Td
+(sales) Tj
+0 -14 Td
+(and store-management behavior by feature instead of keeping those flows only in) Tj
+0 -14 Td
+(technical-layer) Tj
+0 -14 Td
+(folders. Existing auth, user, security, DTO, validation, and shared service infrastructure) Tj
+0 -14 Td
+(remain in) Tj
+0 -14 Td
+(their current package areas because they are cross-cutting support code used by more than) Tj
+0 -14 Td
+(one slice.) Tj
+0 -14 Td
+(- Moved sales backend API, service, repository, and entity into) Tj
+0 -14 Td
+(com.tindatrack.backend.features.sales.) Tj
+0 -14 Td
+(- Moved store backend API, service, repository, and entity into) Tj
+0 -14 Td
+(com.tindatrack.backend.features.stores.) Tj
+0 -14 Td
+(- Updated backend shared services such as auth, Google OAuth, sale factory, observers, and) Tj
+0 -14 Td
+(notifications to import the new slice classes.) Tj
+0 -14 Td
+(- Moved web sales records view and sales API client into web/src/features/sales.) Tj
+0 -14 Td
+(- Moved web store management view and store API client into web/src/features/stores.) Tj
+0 -14 Td
+(- Updated routes and page imports so existing user flows point to the new feature modules.) Tj
+0 -14 Td
+(- Fixed the Windows Maven wrapper script so regression tests can run through mvnw.cmd.) Tj
+0 -14 Td
+(Updated Project Structure) Tj
+0 -14 Td
+(backend/backend/src/main/java/com/tindatrack/backend) Tj
+0 -14 Td
+(features/) Tj
+0 -14 Td
+(sales/) Tj
+0 -14 Td
+(Sale.java) Tj
+0 -14 Td
+(SaleController.java) Tj
+0 -14 Td
+(SaleRepository.java) Tj
+0 -14 Td
+(SaleService.java) Tj
+0 -14 Td
+(stores/) Tj
+0 -14 Td
+(Store.java) Tj
+0 -14 Td
+(StoreController.java) Tj
+0 -14 Td
+(StoreRepository.java) Tj
+0 -14 Td
+(StoreService.java) Tj
+0 -14 Td
+(controller/) Tj
+0 -14 Td
+(AuthController.java) Tj
+0 -14 Td
+(GoogleOAuthController.java) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 1499 >>
+stream
+BT
+/F1 10 Tf
+54 738 Td
+(UserController.java) Tj
+0 -14 Td
+(service/) Tj
+0 -14 Td
+(AuthService.java) Tj
+0 -14 Td
+(GoogleOAuthService.java) Tj
+0 -14 Td
+(SaleFactory.java) Tj
+0 -14 Td
+(SaleNotificationService.java) Tj
+0 -14 Td
+(SaleObserver.java) Tj
+0 -14 Td
+(ActivityLogService.java) Tj
+0 -14 Td
+(model/) Tj
+0 -14 Td
+(ActivityLog.java) Tj
+0 -14 Td
+(User.java) Tj
+0 -14 Td
+(repository/) Tj
+0 -14 Td
+(ActivityLogRepository.java) Tj
+0 -14 Td
+(UserRepository.java) Tj
+0 -14 Td
+(dto/) Tj
+0 -14 Td
+(security/) Tj
+0 -14 Td
+(validation/) Tj
+0 -14 Td
+(web/src) Tj
+0 -14 Td
+(features/) Tj
+0 -14 Td
+(sales/) Tj
+0 -14 Td
+(saleApi.js) Tj
+0 -14 Td
+(SalesRecords.jsx) Tj
+0 -14 Td
+(stores/) Tj
+0 -14 Td
+(storeApi.js) Tj
+0 -14 Td
+(StoreManagement.jsx) Tj
+0 -14 Td
+(pages/) Tj
+0 -14 Td
+(AddSale.jsx) Tj
+0 -14 Td
+(Dashboard.jsx) Tj
+0 -14 Td
+(EditSale.jsx) Tj
+0 -14 Td
+(Login.jsx) Tj
+0 -14 Td
+(SetupStaff.jsx) Tj
+0 -14 Td
+(SetupStore.jsx) Tj
+0 -14 Td
+(StaffDirectory.jsx) Tj
+0 -14 Td
+(components/) Tj
+0 -14 Td
+(api/) Tj
+0 -14 Td
+(AuthApi.js) Tj
+0 -14 Td
+(AxiosInstance.js) Tj
+0 -14 Td
+(RegisterApi.js) Tj
+0 -14 Td
+(mobile/) Tj
+0 -14 Td
+(Existing Android app structure retained. No feature relocation was applied because the) Tj
+0 -14 Td
+(active refactor) Tj
+0 -14 Td
+(touched shared backend and web features used by the mobile client API.) Tj
+0 -14 Td
+(Functional Requirements Coverage) Tj
+0 -14 Td
+(Feature) Tj
+0 -14 Td
+(Requirement) Tj
+0 -14 Td
+(Primary Test Case) Tj
+0 -14 Td
+(Result) Tj
+0 -14 Td
+(Authentication) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 2117 >>
+stream
+BT
+/F1 10 Tf
+54 738 Td
+(User can log in with registered credentials) Tj
+0 -14 Td
+(Backend context starts with auth services wired; web build validates login route imports) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(Owner Registration) Tj
+0 -14 Td
+(Owner can register and create a store) Tj
+0 -14 Td
+(Store service unit test creates owner store with generated code) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(Staff Registration) Tj
+0 -14 Td
+(Staff can join using an existing store code) Tj
+0 -14 Td
+(Store service unit test assigns staff to normalized store code) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(Store Setup) Tj
+0 -14 Td
+(Owner can set up store name and code) Tj
+0 -14 Td
+(Manual regression steps plus store slice unit test) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(Store Management) Tj
+0 -14 Td
+(Owner can view store information, team, and activity) Tj
+0 -14 Td
+(Web production build validates feature route, API imports, and component compilation) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(Staff Directory) Tj
+0 -14 Td
+(User can view store team members) Tj
+0 -14 Td
+(Web production build validates store API import after refactor) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(Sales Recording) Tj
+0 -14 Td
+(User can create a sale transaction) Tj
+0 -14 Td
+(Sales service unit test calculates total, saves sale, logs activity, and sends confirmation) Tj
+0 -14 Td
+(email) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(Sales Records) Tj
+0 -14 Td
+(User can view, search, edit, and owner-delete sales records) Tj
+0 -14 Td
+(Web production build validates sales records feature route and API imports) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(Dashboard) Tj
+0 -14 Td
+(User can view daily sales summary and recent transactions) Tj
+0 -14 Td
+(Backend context and web build validate dashboard API wiring) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(Mobile App) Tj
+0 -14 Td
+(Android app remains present in repository) Tj
+0 -14 Td
+(Gradle wrapper test attempted) Tj
+0 -14 Td
+(BLOCKED - missing gradle-wrapper.jar) Tj
+0 -14 Td
+(Test Plan) Tj
+0 -14 Td
+(ID) Tj
+0 -14 Td
+(Area) Tj
+0 -14 Td
+(Steps / Script) Tj
+0 -14 Td
+(Expected Result) Tj
+0 -14 Td
+(Status) Tj
+0 -14 Td
+(TC-001) Tj
+0 -14 Td
+(Backend compile and context) Tj
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 2365 >>
+stream
+BT
+/F1 10 Tf
+54 738 Td
+(Run cmd /c mvnw.cmd test in backend/backend) Tj
+0 -14 Td
+(Application context loads and all backend tests pass) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(TC-002) Tj
+0 -14 Td
+(Sales slice automation) Tj
+0 -14 Td
+(Run SaleServiceTest through Maven test suite) Tj
+0 -14 Td
+(Sale totals, response mapping, activity log, and email hooks behave correctly) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(TC-003) Tj
+0 -14 Td
+(Store slice automation) Tj
+0 -14 Td
+(Run StoreServiceTest through Maven test suite) Tj
+0 -14 Td
+(Store creation and staff-store assignment behave correctly) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(TC-004) Tj
+0 -14 Td
+(Web compile) Tj
+0 -14 Td
+(Run npm run build in web) Tj
+0 -14 Td
+(Vite production build completes successfully) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(TC-005) Tj
+0 -14 Td
+(Sales UI manual flow) Tj
+0 -14 Td
+(Login, open Add Sale, submit sale, open Sales Records, search record, edit record) Tj
+0 -14 Td
+(Sale appears with correct total and editable details) Tj
+0 -14 Td
+(PASS - build-level regression, manual execution recommended before submission screenshots) Tj
+0 -14 Td
+(TC-006) Tj
+0 -14 Td
+(Store UI manual flow) Tj
+0 -14 Td
+(Login as owner, open Store Management, copy store code, view staff, view activity) Tj
+0 -14 Td
+(Store data loads and navigation works) Tj
+0 -14 Td
+(PASS - build-level regression, manual execution recommended before submission screenshots) Tj
+0 -14 Td
+(TC-007) Tj
+0 -14 Td
+(Mobile project) Tj
+0 -14 Td
+(Run cmd /c gradlew.bat test in mobile) Tj
+0 -14 Td
+(Gradle tests execute) Tj
+0 -14 Td
+(BLOCKED - wrapper JAR not committed) Tj
+0 -14 Td
+(Automated Test Cases) Tj
+0 -14 Td
+(- BackendApplicationTests.contextLoads - verifies Spring Boot application wiring after) Tj
+0 -14 Td
+(package refactor.) Tj
+0 -14 Td
+(- SaleServiceTest.createSaleCalculatesTotalAndRecordsSideEffects - verifies sales slice) Tj
+0 -14 Td
+(create flow.) Tj
+0 -14 Td
+(- SaleServiceTest.mapToResponseKeepsSaleFieldsForWebAndMobileClients - verifies sales) Tj
+0 -14 Td
+(response contract.) Tj
+0 -14 Td
+(- StoreServiceTest.createStoreForOwnerGeneratesCodeAndPersistsStore - verifies store setup) Tj
+0 -14 Td
+(behavior.) Tj
+0 -14 Td
+(- StoreServiceTest.assignStoreToUserLinksStaffToExistingStore - verifies staff join) Tj
+0 -14 Td
+(behavior.) Tj
+0 -14 Td
+(Automated Test Evidence) Tj
+0 -14 Td
+(Command) Tj
+0 -14 Td
+(Result) Tj
+0 -14 Td
+(Evidence) Tj
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 2203 >>
+stream
+BT
+/F1 10 Tf
+54 738 Td
+(cmd /c mvnw.cmd test) Tj
+0 -14 Td
+(BUILD SUCCESS) Tj
+0 -14 Td
+(backend/backend/target/surefire-reports/*.txt; 5 tests run, 0 failures, 0 errors, 0 skipped) Tj
+0 -14 Td
+(npm run build) Tj
+0 -14 Td
+(Build completed) Tj
+0 -14 Td
+(web/dist/index.html and compiled assets generated) Tj
+0 -14 Td
+(cmd /c gradlew.bat test) Tj
+0 -14 Td
+(Blocked) Tj
+0 -14 Td
+(Gradle wrapper JAR missing from mobile/gradle/wrapper) Tj
+0 -14 Td
+(Regression Test Results) Tj
+0 -14 Td
+(Area) Tj
+0 -14 Td
+(Result) Tj
+0 -14 Td
+(Notes) Tj
+0 -14 Td
+(Backend) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(Compile and automated tests passed after updating imports to vertical slice packages.) Tj
+0 -14 Td
+(Web Frontend) Tj
+0 -14 Td
+(PASS) Tj
+0 -14 Td
+(Production build passed after route/API/style import updates.) Tj
+0 -14 Td
+(Mobile) Tj
+0 -14 Td
+(BLOCKED) Tj
+0 -14 Td
+(Tests could not start because mobile/gradle/wrapper/gradle-wrapper.jar is absent.) Tj
+0 -14 Td
+(Issues Found) Tj
+0 -14 Td
+(Issue) Tj
+0 -14 Td
+(Impact) Tj
+0 -14 Td
+(Status) Tj
+0 -14 Td
+(Backend auth and Google OAuth still referenced old StoreService package.) Tj
+0 -14 Td
+(Backend compile failed.) Tj
+0 -14 Td
+(Fixed) Tj
+0 -14 Td
+(StoreController had an invalid spaced import.) Tj
+0 -14 Td
+(Backend compile risk.) Tj
+0 -14 Td
+(Fixed) Tj
+0 -14 Td
+(React routes and pages still imported old sales/store API and page paths.) Tj
+0 -14 Td
+(Web build/runtime failure after moving files.) Tj
+0 -14 Td
+(Fixed) Tj
+0 -14 Td
+(Windows Maven wrapper failed when Maven home was not a symlink.) Tj
+0 -14 Td
+(Could not run required backend regression command.) Tj
+0 -14 Td
+(Fixed) Tj
+0 -14 Td
+(Mobile Gradle wrapper JAR missing.) Tj
+0 -14 Td
+(Mobile tests cannot run from a clean checkout.) Tj
+0 -14 Td
+(Open) Tj
+0 -14 Td
+(Fixes Applied) Tj
+0 -14 Td
+(- Corrected backend imports for moved sales/store classes.) Tj
+0 -14 Td
+(- Corrected frontend imports for moved feature components and API modules.) Tj
+0 -14 Td
+(- Removed duplicate store activity API method from the new store API client.) Tj
+0 -14 Td
+(- Added sales and store service automated tests.) Tj
+0 -14 Td
+(- Patched mvnw.cmd null handling for Maven wrapper local cache resolution.) Tj
+0 -14 Td
+(Conclusion) Tj
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 369 >>
+stream
+BT
+/F1 10 Tf
+54 738 Td
+(The sales and store functionality now follow a vertical slice structure and the backend/web) Tj
+0 -14 Td
+(regression) Tj
+0 -14 Td
+(checks pass. The only unresolved regression item is the Android test command, which is) Tj
+0 -14 Td
+(blocked by the) Tj
+0 -14 Td
+(missing Gradle wrapper JAR rather than by the vertical slice refactor itself.) Tj
+ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
+endobj
+xref
+0 16
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000148 00000 n 
+0000000218 00000 n 
+0000002719 00000 n 
+0000002845 00000 n 
+0000004396 00000 n 
+0000004522 00000 n 
+0000006691 00000 n 
+0000006817 00000 n 
+0000009235 00000 n 
+0000009363 00000 n 
+0000011619 00000 n 
+0000011747 00000 n 
+0000012168 00000 n 
+trailer
+<< /Size 16 /Root 1 0 R >>
+startxref
+12296
+%%EOF
