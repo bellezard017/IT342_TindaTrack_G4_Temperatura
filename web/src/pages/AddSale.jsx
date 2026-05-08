@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SidebarLayout from '../components/SidebarLayout';
-import { saleApi } from '../features/sales/saleApi';
+import { saleApi } from '../api/saleApi';
 import '../styles/SalesRecords.css';
 
 const CATEGORIES = [

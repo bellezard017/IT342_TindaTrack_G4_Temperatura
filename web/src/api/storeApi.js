@@ -1,4 +1,4 @@
-import axiosInstance from '../../api/AxiosInstance';
+import axiosInstance from './AxiosInstance';
 
 export const storeApi = {
 

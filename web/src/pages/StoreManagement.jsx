@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SidebarLayout from '../../components/SidebarLayout';
-import { authApi } from '../../api/AuthApi';
-import { storeApi } from './storeApi';
-import '../../styles/storemanagement.css';
+import SidebarLayout from '../components/SidebarLayout';
+import { authApi } from '../api/AuthApi';
+import { storeApi } from '../api/storeApi';
+import '../styles/storemanagement.css';
 
 /* ── Icons ── */
 const StoreInfoIcon = () => (
@@ -217,7 +217,7 @@ export default function StoreManagement() {
         downloadBlob(blob, `sales_export.csv`);
       } else {
         // Fallback: build CSV client-side from all sales
-        const { saleApi } = await import('../sales/saleApi');
+        const { saleApi } = await import('../api/saleApi');
         const allSales = await saleApi.getSales();
         const csv  = buildCSV(allSales);
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

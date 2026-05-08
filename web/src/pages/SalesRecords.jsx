@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SidebarLayout from '../../components/SidebarLayout';
-import { saleApi } from './saleApi';
-import '../../styles/salesrecords.css';
+import SidebarLayout from '../components/SidebarLayout';
+import { saleApi } from '../api/saleApi';
+import '../styles/salesrecords.css';
 
 const CATEGORIES = [
   'All Categories',

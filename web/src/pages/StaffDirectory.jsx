@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SidebarLayout from '../components/SidebarLayout';
 import { authApi } from '../api/AuthApi';
-import { storeApi } from '../features/stores/storeApi';
+import { storeApi } from '../api/storeApi';
 import '../styles/StaffDirectory.css';
 
 /* ── Icons ── */
