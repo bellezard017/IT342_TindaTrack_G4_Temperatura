@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { authApi } from '../api/authApi';
+import { authApi } from '../api/AuthApi';
 import '../styles/dashboard.css';
 
 const StoreIcon = () => (

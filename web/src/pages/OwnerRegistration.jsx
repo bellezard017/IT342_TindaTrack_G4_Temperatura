@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { registerApi } from '../api/registerApi';
+import { registerApi } from '../api/RegisterApi';
 import PasswordField from '../components/PasswordField';
 import '../styles/Register.css';
 
@@ -57,11 +57,9 @@ export default function OwnerRegistration() {
     setError('');
     try {
       const data = await registerApi.registerOwner({
-        name:            form.name,
-        email:           form.email,
-        password:        form.password,
-        confirmPassword: form.confirmPassword,
-        storeName:       form.storeName,
+        name: form.name, email: form.email,
+        password: form.password, confirmPassword: form.confirmPassword,
+        storeName: form.storeName,
       });
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
@@ -78,14 +76,13 @@ export default function OwnerRegistration() {
   };
 
   const handleGoogleSignup = () => {
-    // Use full redirect for OAuth with "owner" intent - no popup needed
+    sessionStorage.setItem('oauth_intent', 'owner');
     window.location.href = `${API_BASE}/auth/oauth/google/login?state=owner`;
   };
 
   return (
     <div className="reg-form-page">
       <div className="reg-form-card">
-
         <div className="reg-form-logo"><StoreIcon /></div>
         <h2>Create Your Store</h2>
         <p className="sub">Register as a store owner</p>
@@ -95,38 +92,25 @@ export default function OwnerRegistration() {
         <form onSubmit={handleSubmit} noValidate>
           <div className="field">
             <label htmlFor="name">Full Name</label>
-            <input
-              id="name" name="name" type="text"
-              placeholder="Juan Dela Cruz" autoComplete="name"
-              value={form.name} onChange={handleChange}
-              className={error && !form.name ? 'error-input' : ''}
-            />
+            <input id="name" name="name" type="text" placeholder="Juan Dela Cruz"
+              autoComplete="name" value={form.name} onChange={handleChange}
+              className={error && !form.name ? 'error-input' : ''}/>
           </div>
           <div className="field">
             <label htmlFor="email">Email</label>
-            <input
-              id="email" name="email" type="email"
-              placeholder="your@email.com" autoComplete="email"
-              value={form.email} onChange={handleChange}
-            />
+            <input id="email" name="email" type="email" placeholder="your@email.com"
+              autoComplete="email" value={form.email} onChange={handleChange}/>
           </div>
-          <PasswordField
-            id="password" name="password" label="Password"
+          <PasswordField id="password" name="password" label="Password"
             placeholder="••••••••" autoComplete="new-password"
-            value={form.password} onChange={handleChange} error={!!error}
-          />
-          <PasswordField
-            id="confirmPassword" name="confirmPassword" label="Confirm Password"
+            value={form.password} onChange={handleChange} error={!!error}/>
+          <PasswordField id="confirmPassword" name="confirmPassword" label="Confirm Password"
             placeholder="••••••••" autoComplete="new-password"
-            value={form.confirmPassword} onChange={handleChange} error={!!error}
-          />
+            value={form.confirmPassword} onChange={handleChange} error={!!error}/>
           <div className="field">
             <label htmlFor="storeName">Store Name</label>
-            <input
-              id="storeName" name="storeName" type="text"
-              placeholder="Tindahan ni Juan"
-              value={form.storeName} onChange={handleChange}
-            />
+            <input id="storeName" name="storeName" type="text" placeholder="Tindahan ni Juan"
+              value={form.storeName} onChange={handleChange}/>
           </div>
           <button type="submit" className="btn-submit" disabled={loading}>
             {loading ? <><span className="spinner" /> Creating store…</> : 'Create Store'}
@@ -138,7 +122,6 @@ export default function OwnerRegistration() {
           <GoogleIcon /> Sign up with Google
         </button>
         <Link to="/register" className="back-link">← Back to registration options</Link>
-
       </div>
     </div>
   );

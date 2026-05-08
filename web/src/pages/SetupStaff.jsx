@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authApi } from '../api/AuthApi';
+import axiosInstance from '../api/AxiosInstance';
 import '../styles/Register.css';
 
 const UsersIcon = () => (
@@ -15,27 +16,41 @@ const UsersIcon = () => (
 
 export default function SetupStaff() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [storeCode, setStoreCode] = useState('');
   const [error, setError]         = useState('');
   const [loading, setLoading]     = useState(false);
 
-  // If OAuth token is provided in URL, save it to localStorage
   useEffect(() => {
-    const token = searchParams.get('token');
-    if (token) {
-      localStorage.setItem('token', token);
-    }
-  }, [searchParams]);
+    const loadOAuthUser = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      if (token) {
+        localStorage.setItem('token', token);
+        window.history.replaceState({}, '', '/setup-staff');
+      }
+
+      if (localStorage.getItem('token')) {
+        try {
+          const user = await authApi.getMe();
+          localStorage.setItem('user', JSON.stringify(user));
+        } catch {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          navigate('/login?error=oauth_user_load_failed', { replace: true });
+        }
+      }
+    };
+
+    loadOAuthUser();
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!storeCode.trim()) { setError('Store code is required.'); return; }
-
     setLoading(true);
     try {
-      const { data } = await axiosInstance.post('/store/join', { storeCode: storeCode.trim().toUpperCase() });
-      localStorage.setItem('user', JSON.stringify(data));
+      const { data: user } = await axiosInstance.post('/store/join', { storeCode: storeCode.trim().toUpperCase() });
+      localStorage.setItem('user', JSON.stringify(user));
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid store code. Please try again.');
@@ -47,11 +62,7 @@ export default function SetupStaff() {
   return (
     <div className="reg-form-page">
       <div className="reg-form-card">
-
-        <div className="reg-form-logo">
-          <UsersIcon />
-        </div>
-
+        <div className="reg-form-logo"><UsersIcon /></div>
         <h2>Join a Store</h2>
         <p className="sub">Enter the store code from your owner</p>
 
@@ -61,8 +72,7 @@ export default function SetupStaff() {
           <div className="field">
             <label htmlFor="storeCode">Store Code</label>
             <input
-              id="storeCode"
-              type="text"
+              id="storeCode" type="text"
               placeholder="Enter store code from owner"
               value={storeCode}
               onChange={(e) => { setError(''); setStoreCode(e.target.value); }}
@@ -74,7 +84,6 @@ export default function SetupStaff() {
             {loading ? <><span className="spinner" /> Joining…</> : 'Join Store'}
           </button>
         </form>
-
       </div>
     </div>
   );

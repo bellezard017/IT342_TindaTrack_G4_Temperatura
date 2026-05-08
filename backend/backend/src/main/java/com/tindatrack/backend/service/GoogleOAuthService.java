@@ -120,13 +120,16 @@ public class GoogleOAuthService {
         GoogleUserInfo googleUserInfo     = getUserInfo(tokenResponse.getAccess_token());
 
         String googleId = googleUserInfo.getSub();
-        String email    = googleUserInfo.getEmail();
+        String email = normalizeEmail(googleUserInfo.getEmail());
+        if (email == null || email.isBlank()) {
+            throw new RuntimeException("Google account did not return an email address.");
+        }
 
-        // First try to find by Google ID, then by email
+        // First try Google ID. If the same email was already registered normally,
+        // link that account instead of creating a duplicate.
         User user = userRepository.findByGoogleId(googleId).orElse(null);
-        
         if (user == null) {
-            user = userRepository.findByEmail(email).orElse(null);
+            user = userRepository.findByEmailIgnoreCase(email).orElse(null);
         }
 
         boolean isNewUser = (user == null);
@@ -135,7 +138,7 @@ public class GoogleOAuthService {
             // Create new user - respect the intent parameter for role
             user = new User();
             user.setName(googleUserInfo.getName());
-            user.setEmail(googleUserInfo.getEmail());
+            user.setEmail(email);
             user.setPassword("OAUTH_NO_PASSWORD");
             user.setGoogleId(googleId);
             user.setIsOAuthUser(true);
@@ -160,6 +163,12 @@ public class GoogleOAuthService {
                 user = userRepository.save(user);
                 System.out.println("[GoogleOAuth] Linked Google ID to existing user: " + email);
             }
+
+            if (user.getRole() == null || user.getRole().isBlank()) {
+                user.setRole("staff".equalsIgnoreCase(intent) ? "STAFF" : "OWNER");
+                user = userRepository.save(user);
+            }
+
             // Enrich store information for existing users
             storeService.enrichUserStore(user);
             System.out.println("[GoogleOAuth] Logged in existing user: " + email + " with role: " + user.getRole());
@@ -167,5 +176,9 @@ public class GoogleOAuthService {
 
         String jwtToken = jwtUtil.generateToken(user.getEmail());
         return new AuthResponse(jwtToken, user);
+    }
+
+    private String normalizeEmail(String email) {
+        return email == null ? null : email.trim().toLowerCase();
     }
 }

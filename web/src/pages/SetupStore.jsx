@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authApi } from '../api/AuthApi';
+import axiosInstance from '../api/AxiosInstance';
 import '../styles/Register.css';
 
 const StoreIcon = () => (
@@ -12,27 +13,41 @@ const StoreIcon = () => (
 
 export default function SetupStore() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [storeName, setStoreName] = useState('');
   const [error, setError]         = useState('');
   const [loading, setLoading]     = useState(false);
 
-  // If OAuth token is provided in URL, save it to localStorage
   useEffect(() => {
-    const token = searchParams.get('token');
-    if (token) {
-      localStorage.setItem('token', token);
-    }
-  }, [searchParams]);
+    const loadOAuthUser = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      if (token) {
+        localStorage.setItem('token', token);
+        window.history.replaceState({}, '', '/setup-store');
+      }
+
+      if (localStorage.getItem('token')) {
+        try {
+          const user = await authApi.getMe();
+          localStorage.setItem('user', JSON.stringify(user));
+        } catch {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          navigate('/login?error=oauth_user_load_failed', { replace: true });
+        }
+      }
+    };
+
+    loadOAuthUser();
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!storeName.trim()) { setError('Store name is required.'); return; }
-
     setLoading(true);
     try {
-      const { data } = await axiosInstance.post('/store/setup', { storeName });
-      localStorage.setItem('user', JSON.stringify(data));
+      const { data: user } = await axiosInstance.post('/store/setup', { storeName });
+      localStorage.setItem('user', JSON.stringify(user));
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to set up store. Please try again.');
@@ -44,11 +59,7 @@ export default function SetupStore() {
   return (
     <div className="reg-form-page">
       <div className="reg-form-card">
-
-        <div className="reg-form-logo">
-          <StoreIcon />
-        </div>
-
+        <div className="reg-form-logo"><StoreIcon /></div>
         <h2>One More Step!</h2>
         <p className="sub">What would you like to name your store?</p>
 
@@ -58,8 +69,7 @@ export default function SetupStore() {
           <div className="field">
             <label htmlFor="storeName">Store Name</label>
             <input
-              id="storeName"
-              type="text"
+              id="storeName" type="text"
               placeholder="Tindahan ni Juan"
               value={storeName}
               onChange={(e) => { setError(''); setStoreName(e.target.value); }}
@@ -69,7 +79,6 @@ export default function SetupStore() {
             {loading ? <><span className="spinner" /> Saving…</> : 'Continue to Dashboard'}
           </button>
         </form>
-
       </div>
     </div>
   );

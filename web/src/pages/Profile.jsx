@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SidebarLayout from '../components/SidebarLayout';
-import { authApi } from '../api/authApi';
+import { authApi } from '../api/AuthApi';
 import '../styles/Profile.css';
 
 /* ── Icons ── */

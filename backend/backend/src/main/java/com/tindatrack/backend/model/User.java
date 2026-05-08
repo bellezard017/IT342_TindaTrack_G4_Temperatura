@@ -43,8 +43,9 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String avatarUrl;
 
-    @Column(length = 255)
+    @Column(name = "google_id", length = 255)
     private String googleId;
 
+    @Column(name = "is_oauth_user")
     private Boolean isOAuthUser = false;
 }

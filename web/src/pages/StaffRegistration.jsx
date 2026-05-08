@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { registerApi } from '../api/registerApi';
+import { registerApi } from '../api/RegisterApi';
 import PasswordField from '../components/PasswordField';
 import '../styles/Register.css';
 
@@ -60,11 +60,9 @@ export default function StaffRegistration() {
     setError('');
     try {
       const data = await registerApi.registerStaff({
-        name:            form.name,
-        email:           form.email,
-        password:        form.password,
-        confirmPassword: form.confirmPassword,
-        storeCode:       form.storeCode.trim().toUpperCase(),
+        name: form.name, email: form.email,
+        password: form.password, confirmPassword: form.confirmPassword,
+        storeCode: form.storeCode.trim().toUpperCase(),
       });
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
@@ -81,14 +79,13 @@ export default function StaffRegistration() {
   };
 
   const handleGoogleSignup = () => {
-    // Use full redirect for OAuth with "staff" intent - no popup needed
+    sessionStorage.setItem('oauth_intent', 'staff');
     window.location.href = `${API_BASE}/auth/oauth/google/login?state=staff`;
   };
 
   return (
     <div className="reg-form-page">
       <div className="reg-form-card">
-
         <div className="reg-form-logo"><UsersIcon /></div>
         <h2>Join a Store</h2>
         <p className="sub">Register as staff member</p>
@@ -98,38 +95,26 @@ export default function StaffRegistration() {
         <form onSubmit={handleSubmit} noValidate>
           <div className="field">
             <label htmlFor="name">Full Name</label>
-            <input
-              id="name" name="name" type="text"
-              placeholder="Maria Santos" autoComplete="name"
-              value={form.name} onChange={handleChange}
-            />
+            <input id="name" name="name" type="text" placeholder="Maria Santos"
+              autoComplete="name" value={form.name} onChange={handleChange}/>
           </div>
           <div className="field">
             <label htmlFor="email">Email</label>
-            <input
-              id="email" name="email" type="email"
-              placeholder="your@email.com" autoComplete="email"
-              value={form.email} onChange={handleChange}
-            />
+            <input id="email" name="email" type="email" placeholder="your@email.com"
+              autoComplete="email" value={form.email} onChange={handleChange}/>
           </div>
-          <PasswordField
-            id="password" name="password" label="Password"
+          <PasswordField id="password" name="password" label="Password"
             placeholder="••••••••" autoComplete="new-password"
-            value={form.password} onChange={handleChange} error={!!error}
-          />
-          <PasswordField
-            id="confirmPassword" name="confirmPassword" label="Confirm Password"
+            value={form.password} onChange={handleChange} error={!!error}/>
+          <PasswordField id="confirmPassword" name="confirmPassword" label="Confirm Password"
             placeholder="••••••••" autoComplete="new-password"
-            value={form.confirmPassword} onChange={handleChange} error={!!error}
-          />
+            value={form.confirmPassword} onChange={handleChange} error={!!error}/>
           <div className="field">
             <label htmlFor="storeCode">Store Code</label>
-            <input
-              id="storeCode" name="storeCode" type="text"
+            <input id="storeCode" name="storeCode" type="text"
               placeholder="Enter store code from owner"
               value={form.storeCode} onChange={handleChange}
-              style={{ textTransform: 'uppercase', letterSpacing: '1px' }}
-            />
+              style={{ textTransform: 'uppercase', letterSpacing: '1px' }}/>
             <p className="field-hint">Ask your store owner for the store code</p>
           </div>
           <button type="submit" className="btn-submit" disabled={loading}>
@@ -142,7 +127,6 @@ export default function StaffRegistration() {
           <GoogleIcon /> Sign up with Google
         </button>
         <Link to="/register" className="back-link">← Back to registration options</Link>
-
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { authApi } from '../api/authApi';
+import { authApi } from '../api/AuthApi';
 import PasswordField from '../components/PasswordField';
 import '../styles/Login.css';
 
@@ -85,13 +85,11 @@ export default function Login() {
   };
 
   const handleGoogleLogin = () => {
-    // Use full redirect instead of popup for proper OAuth handshake
     window.location.href = `${API_BASE}/auth/oauth/google/login`;
   };
 
   return (
     <div className="login-page">
-
       <div className="login-left">
         <div className="logo-row">
           <div className="logo-icon"><HomeIcon /></div>
@@ -152,7 +150,6 @@ export default function Login() {
           </p>
         </div>
       </div>
-
     </div>
   );
 }

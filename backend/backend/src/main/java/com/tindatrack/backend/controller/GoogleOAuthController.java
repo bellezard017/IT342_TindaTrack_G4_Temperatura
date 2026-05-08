@@ -3,18 +3,24 @@ package com.tindatrack.backend.controller;
 import com.tindatrack.backend.dto.AuthResponse;
 import com.tindatrack.backend.model.User;
 import com.tindatrack.backend.service.GoogleOAuthService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/api/auth/oauth")
 public class GoogleOAuthController {
 
     private final GoogleOAuthService googleOAuthService;
+
+    @Value("${app.frontend.url:http://localhost:5173}")
+    private String frontendUrl;
 
     public GoogleOAuthController(GoogleOAuthService googleOAuthService) {
         this.googleOAuthService = googleOAuthService;
@@ -34,45 +40,38 @@ public class GoogleOAuthController {
             @RequestParam(value = "state", required = false) String state) {
 
         if (error != null) {
-            System.err.println("[GoogleOAuth] Error from Google: " + error);
-            return new RedirectView("http://localhost:5173/oauth/callback?error=" + error);
+            return oauthError(error);
         }
         if (code == null) {
-            System.err.println("[GoogleOAuth] Missing authorization code");
-            return new RedirectView("http://localhost:5173/oauth/callback?error=missing_code");
+            return oauthError("missing_code");
         }
 
         try {
             AuthResponse auth = googleOAuthService.authenticateGoogleUser(code, state);
-            User user         = auth.getUser();
-            String token      = auth.getToken();
+            User user  = auth.getUser();
+            String token = auth.getToken();
 
             boolean hasStore = user.getStoreId() != null && user.getStoreId() != 0L;
             boolean isOwner  = "OWNER".equalsIgnoreCase(user.getRole());
             boolean isStaff  = "STAFF".equalsIgnoreCase(user.getRole());
 
-            String redirect;
-            // If user doesn't have a store set up, redirect to setup
+            String next;
             if (!hasStore && isOwner) {
-                System.out.println("[GoogleOAuth] Owner needs store setup, redirecting to /setup-store");
-                redirect = "http://localhost:5173/setup-store?token=" + token;
+                next = "setup-store";
             } else if (!hasStore && isStaff) {
-                System.out.println("[GoogleOAuth] Staff needs store assignment, redirecting to /setup-staff");
-                redirect = "http://localhost:5173/setup-staff?token=" + token;
+                next = "setup-staff";
             } else {
-                System.out.println("[GoogleOAuth] User authenticated successfully, redirecting to /oauth/callback");
-                redirect = "http://localhost:5173/oauth/callback?token=" + token + "&user=" + user.getName();
+                next = "dashboard";
             }
 
+            String redirect = frontendUrl + "/oauth/callback?token="
+                    + URLEncoder.encode(token, StandardCharsets.UTF_8)
+                    + "&next=" + URLEncoder.encode(next, StandardCharsets.UTF_8);
             return new RedirectView(redirect);
 
-        } catch (IOException | InterruptedException e) {
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            System.err.println("[GoogleOAuth] Authentication error: " + errorMsg);
-            System.err.println("[GoogleOAuth] Exception type: " + e.getClass().getName());
+        } catch (IOException | InterruptedException | RuntimeException e) {
             e.printStackTrace();
-            return new RedirectView("http://localhost:5173/oauth/callback?error=" + 
-                    java.net.URLEncoder.encode("auth_failed: " + errorMsg, java.nio.charset.StandardCharsets.UTF_8));
+            return oauthError("auth_failed");
         }
     }
 
@@ -87,5 +86,10 @@ public class GoogleOAuthController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    private RedirectView oauthError(String error) {
+        return new RedirectView(frontendUrl + "/oauth/callback?error="
+                + URLEncoder.encode(error, StandardCharsets.UTF_8));
     }
 }
