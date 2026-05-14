@@ -5,4 +5,5 @@ node_modules/
 target/
 mobile/.idea/
 mobile/build/
+mobile/app/build/
 *.iml
