@@ -54,7 +54,11 @@ public class GoogleOAuthController {
 
             String next = resolveNextRoute(user);
 
-            String redirect = frontendUrl + "/oauth/callback?token="
+            String callbackBase = isMobileState(state)
+                    ? "tindatrack://oauth/callback"
+                    : frontendUrl + "/oauth/callback";
+
+            String redirect = callbackBase + "?token="
                     + URLEncoder.encode(token, StandardCharsets.UTF_8)
                     + "&next=" + URLEncoder.encode(next, StandardCharsets.UTF_8);
             return new RedirectView(redirect);
@@ -91,7 +95,11 @@ public class GoogleOAuthController {
     }
 
     private RedirectView oauthError(String error, String state) {
-        String redirect = frontendUrl + "/oauth/callback?error="
+        String callbackBase = isMobileState(state)
+                ? "tindatrack://oauth/callback"
+                : frontendUrl + "/oauth/callback";
+
+        String redirect = callbackBase + "?error="
                 + URLEncoder.encode(error, StandardCharsets.UTF_8);
 
         if (state != null && !state.isBlank()) {
@@ -99,6 +107,10 @@ public class GoogleOAuthController {
         }
 
         return new RedirectView(redirect);
+    }
+
+    private boolean isMobileState(String state) {
+        return state != null && state.toLowerCase().startsWith("mobile");
     }
 
     private boolean isLocalRequest(HttpServletRequest request) {
