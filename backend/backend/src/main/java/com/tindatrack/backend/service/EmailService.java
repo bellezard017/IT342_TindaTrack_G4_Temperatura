@@ -37,7 +37,7 @@ public class EmailService {
 
             mailSender.send(message);
             System.out.println("[EmailService] Welcome email sent to: " + toEmail);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             System.err.println("[EmailService] Failed to send welcome email: " + e.getMessage());
         }
     }
@@ -59,7 +59,7 @@ public class EmailService {
 
             mailSender.send(message);
             System.out.println("[EmailService] Sale confirmation sent to: " + toEmail);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             System.err.println("[EmailService] Failed to send sale confirmation: " + e.getMessage());
         }
     }
