@@ -130,6 +130,7 @@ const ActivityIconMap = {
   delete:  { icon: <DeleteActivityIcon />,     bg: '#FEE2E2' },
   export:  { icon: <ExportActivityIcon />,     bg: '#FEF3C7' },
   profile: { icon: <ProfileActivityIcon />,    bg: '#EDE9FE' },
+  store:   { icon: <StoreInfoIcon />,          bg: '#FFEDD5' },
 };
 
 export default function StoreManagement() {
@@ -159,32 +160,37 @@ export default function StoreManagement() {
         localStorage.setItem('user', JSON.stringify(freshUser));
         const team = await storeApi.getTeam();
         setTeamMembers(team || []);
+        
         // Load activity logs
         try {
           const logs = await storeApi.getActivity();
-          console.log('[ActivityLog] Fetched logs from backend:', logs);
+          console.log('[StoreManagement] Activity logs response:', logs);
+          
           if (Array.isArray(logs)) {
             if (logs.length === 0) {
-              console.log('[ActivityLog] No activities recorded yet');
+              console.log('[StoreManagement] No activities recorded yet');
+              setActivity([]);
             } else {
-              // Normalize backend shape → { id, type, label, userName, createdAt, amount }
               const normalized = logs.map((l) => ({
                 id:       l.id,
                 type:     l.type     || 'profile',
                 label:    l.label    || l.description || '',
                 user:     l.userName || l.user        || 'Unknown',
                 time:     formatActivityTime(l.createdAt || l.timestamp),
-                amount:   l.amount   ? `₱${Number(l.amount).toFixed(2)}` : null,
+                amount:   l.amount !== null && l.amount !== undefined
+                  ? `₱${Number(l.amount).toFixed(2)}`
+                  : null,
               }));
-              console.log('[ActivityLog] Normalized activities:', normalized);
+              console.log('[StoreManagement] Normalized activities:', normalized);
               setActivity(normalized);
             }
           } else {
-            console.warn('[ActivityLog] Response is not an array:', logs);
+            console.warn('[StoreManagement] Activity response is not an array:', logs);
+            setActivity([]);
           }
-        } catch (logErr) {
-          console.error('[ActivityLog] Error loading activities:', logErr);
-          /* keep empty placeholder */
+        } catch (actErr) {
+          console.error('[StoreManagement] Error loading activities:', actErr);
+          setActivity([]);
         }
       } catch {
         setError('Unable to load store details. Please try again later.');
