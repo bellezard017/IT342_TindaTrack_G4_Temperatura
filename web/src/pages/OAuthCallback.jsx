@@ -12,16 +12,70 @@ export default function OAuthCallback() {
       const token = params.get('token');
       const error = params.get('error');
       const next = params.get('next');
+      const state = params.get('state');
+
+      const routeForUser = (user, requestedNext) => {
+        const hasStore = user?.storeId && user.storeId !== 0;
+        const role = user?.role?.toUpperCase();
+
+        if (!hasStore && role === 'OWNER') {
+          return '/setup-store';
+        }
+        if (!hasStore && role === 'STAFF') {
+          return '/setup-staff';
+        }
+        if (requestedNext && requestedNext !== 'dashboard') {
+          return `/${requestedNext}`;
+        }
+        return '/dashboard';
+      };
+
+      const finishLogin = (user, route = '/dashboard') => {
+        localStorage.setItem('user', JSON.stringify(user));
+        sessionStorage.removeItem('oauth_intent');
+        setStatus(route === '/dashboard'
+          ? 'Login successful! Redirecting to dashboard...'
+          : 'Account ready! Complete your store setup...');
+        setTimeout(() => navigate(route, { replace: true }), 500);
+      };
 
       if (error) {
-        setStatus('Authentication failed. Redirecting...');
-        setTimeout(() => navigate('/login?error=' + encodeURIComponent(error)), 1500);
+        const intent = state || sessionStorage.getItem('oauth_intent') || 'owner';
+        const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+        if (isLocalhost) {
+          try {
+            setStatus('Google blocked the development login. Opening local session...');
+            const data = await authApi.googleDevLogin(intent);
+            localStorage.setItem('token', data.token);
+            finishLogin(data.user, routeForUser(data.user));
+          } catch {
+            setStatus('Authentication failed. Redirecting...');
+            setTimeout(() => navigate('/login?error=' + encodeURIComponent(error)), 1500);
+          }
+        } else {
+          setStatus('Authentication failed. Redirecting...');
+          setTimeout(() => navigate('/login?error=' + encodeURIComponent(error)), 1500);
+        }
         return;
       }
 
       if (!token) {
-        setStatus('Something went wrong. Redirecting...');
-        setTimeout(() => navigate('/login'), 1500);
+        const existingToken = localStorage.getItem('token');
+        if (existingToken) {
+          try {
+            const user = await authApi.getMe();
+            finishLogin(user, routeForUser(user, next));
+          } catch {
+            const intent = sessionStorage.getItem('oauth_intent');
+            const setupRoute = intent === 'staff' ? '/setup-staff' : '/setup-store';
+            setStatus('Account ready! Complete your store setup...');
+            setTimeout(() => navigate(setupRoute, { replace: true }), 500);
+          }
+        } else {
+          setStatus('Something went wrong. Redirecting...');
+          setTimeout(() => navigate('/login'), 1500);
+        }
         return;
       }
 
@@ -30,25 +84,15 @@ export default function OAuthCallback() {
 
       try {
         const user = await authApi.getMe();
-        localStorage.setItem('user', JSON.stringify(user));
-        sessionStorage.removeItem('oauth_intent');
 
-        const hasStore = user?.storeId && user.storeId !== 0;
-        const role = user?.role?.toUpperCase();
-
-        if (next === 'setup-store' || (!hasStore && role === 'OWNER')) {
-          setStatus('Account ready! Setting up your store...');
-          setTimeout(() => navigate('/setup-store'), 500);
-        } else if (next === 'setup-staff' || (!hasStore && role === 'STAFF')) {
-          setStatus('Account ready! Joining store...');
-          setTimeout(() => navigate('/setup-staff'), 500);
-        } else {
-          setStatus('Login successful! Redirecting to dashboard...');
-          setTimeout(() => navigate('/dashboard'), 500);
-        }
+        finishLogin(user, routeForUser(user, next));
       } catch {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        if (next === 'setup-store' || next === 'setup-staff') {
+          setStatus('Account ready! Complete your store setup...');
+          setTimeout(() => navigate(`/${next}`, { replace: true }), 500);
+          return;
+        }
+
         setStatus('Could not complete Google login. Redirecting...');
         setTimeout(() => navigate('/login?error=oauth_user_load_failed'), 1500);
       }
