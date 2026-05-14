@@ -31,9 +31,7 @@ export default function SetupStore() {
           const user = await authApi.getMe();
           localStorage.setItem('user', JSON.stringify(user));
         } catch {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          navigate('/login?error=oauth_user_load_failed', { replace: true });
+          setError('Session is still being prepared. Enter your store name to continue.');
         }
       }
     };
@@ -50,7 +48,12 @@ export default function SetupStore() {
       localStorage.setItem('user', JSON.stringify(user));
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to set up store. Please try again.');
+      setError(
+        err.response?.data?.error?.message ||
+        err.response?.data?.message ||
+        err.response?.data?.message ||
+        'Failed to set up store. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
