@@ -8,7 +8,6 @@ const axiosInstance = axios.create({
   timeout: 10000,
 });
 
-// Request interceptor – attach JWT token if present
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -20,16 +19,11 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor – handle 401 globally
+// Pages handle 401s themselves. A single background request should not destroy
+// a valid OAuth session and bounce the user back to login.
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 export default axiosInstance;
