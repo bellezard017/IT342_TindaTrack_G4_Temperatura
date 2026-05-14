@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -40,10 +41,10 @@ public class GoogleOAuthController {
             @RequestParam(value = "state", required = false) String state) {
 
         if (error != null) {
-            return oauthError(error);
+            return oauthError(error, state);
         }
         if (code == null) {
-            return oauthError("missing_code");
+            return oauthError("missing_code", state);
         }
 
         try {
@@ -51,18 +52,7 @@ public class GoogleOAuthController {
             User user  = auth.getUser();
             String token = auth.getToken();
 
-            boolean hasStore = user.getStoreId() != null && user.getStoreId() != 0L;
-            boolean isOwner  = "OWNER".equalsIgnoreCase(user.getRole());
-            boolean isStaff  = "STAFF".equalsIgnoreCase(user.getRole());
-
-            String next;
-            if (!hasStore && isOwner) {
-                next = "setup-store";
-            } else if (!hasStore && isStaff) {
-                next = "setup-staff";
-            } else {
-                next = "dashboard";
-            }
+            String next = resolveNextRoute(user);
 
             String redirect = frontendUrl + "/oauth/callback?token="
                     + URLEncoder.encode(token, StandardCharsets.UTF_8)
@@ -71,7 +61,7 @@ public class GoogleOAuthController {
 
         } catch (IOException | InterruptedException | RuntimeException e) {
             e.printStackTrace();
-            return oauthError("auth_failed");
+            return oauthError("auth_failed", state);
         }
     }
 
@@ -88,8 +78,50 @@ public class GoogleOAuthController {
         }
     }
 
-    private RedirectView oauthError(String error) {
-        return new RedirectView(frontendUrl + "/oauth/callback?error="
-                + URLEncoder.encode(error, StandardCharsets.UTF_8));
+    @PostMapping("/google/dev-login")
+    public ResponseEntity<AuthResponse> developmentGoogleLogin(
+            @RequestParam(required = false) String intent,
+            HttpServletRequest request) {
+
+        if (!isLocalRequest(request)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(googleOAuthService.authenticateDevelopmentGoogleUser(intent));
+    }
+
+    private RedirectView oauthError(String error, String state) {
+        String redirect = frontendUrl + "/oauth/callback?error="
+                + URLEncoder.encode(error, StandardCharsets.UTF_8);
+
+        if (state != null && !state.isBlank()) {
+            redirect += "&state=" + URLEncoder.encode(state, StandardCharsets.UTF_8);
+        }
+
+        return new RedirectView(redirect);
+    }
+
+    private boolean isLocalRequest(HttpServletRequest request) {
+        String serverName = request.getServerName();
+        String remoteAddress = request.getRemoteAddr();
+
+        return "localhost".equalsIgnoreCase(serverName)
+                || "127.0.0.1".equals(serverName)
+                || "0:0:0:0:0:0:0:1".equals(remoteAddress)
+                || "127.0.0.1".equals(remoteAddress);
+    }
+
+    private String resolveNextRoute(User user) {
+        boolean hasStore = user.getStoreId() != null && user.getStoreId() != 0L;
+        boolean isOwner = "OWNER".equalsIgnoreCase(user.getRole());
+        boolean isStaff = "STAFF".equalsIgnoreCase(user.getRole());
+
+        if (!hasStore && isOwner) {
+            return "setup-store";
+        }
+        if (!hasStore && isStaff) {
+            return "setup-staff";
+        }
+        return "dashboard";
     }
 }
