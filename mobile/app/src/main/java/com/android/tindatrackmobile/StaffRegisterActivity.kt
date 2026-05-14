@@ -99,7 +99,7 @@ class StaffRegisterActivity : AppCompatActivity() {
         }
 
         btnGoogle.setOnClickListener {
-            val url = "${RetrofitClient.getBaseUrl()}auth/oauth/google/login"
+            val url = "${RetrofitClient.getBaseUrl()}auth/oauth/google/login?state=mobile-staff"
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
         }
     }
