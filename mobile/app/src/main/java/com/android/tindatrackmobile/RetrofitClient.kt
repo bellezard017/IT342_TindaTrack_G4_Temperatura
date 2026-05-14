@@ -9,14 +9,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    // ── YOUR BACKEND URL ──
-    // Emulator  → "http://10.0.2.2:8080/api/"
-    // Real device on same WiFi → use your PC's IPv4 from ipconfig
+    // Emulator: http://10.0.2.2:8080/api/
+    // Real device on the same WiFi: use your PC IPv4 from ipconfig.
     private const val BASE_URL = "http://192.168.1.4:8080/api/"
 
     private var token: String? = null
 
-    fun setToken(t: String?) { token = t }
+    fun setToken(t: String?) {
+        token = t
+    }
 
     private val authInterceptor = Interceptor { chain ->
         val request = chain.request().newBuilder().apply {
@@ -43,10 +44,11 @@ object RetrofitClient {
             .create(ApiService::class.java)
     }
 
-    // ── Token helpers ──
     fun saveToken(context: Context, t: String) {
         context.getSharedPreferences("tinda_prefs", Context.MODE_PRIVATE)
-            .edit().putString("token", t).apply()
+            .edit()
+            .putString("token", t)
+            .apply()
         token = t
     }
 
@@ -57,33 +59,42 @@ object RetrofitClient {
         return t
     }
 
-    // ── User helpers ──
     fun saveUser(context: Context, user: UserDto) {
         context.getSharedPreferences("tinda_prefs", Context.MODE_PRIVATE)
             .edit()
-            .putString("user_name",       user.name)
-            .putString("user_email",      user.email)
-            .putString("user_role",       user.role)
+            .putString("user_name", user.name)
+            .putString("user_email", user.email)
+            .putString("user_role", user.role)
+            .putLong("user_store_id", user.storeId ?: 0L)
             .putString("user_store_name", user.storeName)
             .putString("user_store_code", user.storeCode)
+            .putString("user_phone", user.phone)
+            .putString("user_address", user.address)
+            .putString("user_avatar_url", user.avatarUrl)
             .apply()
     }
 
     fun loadUser(context: Context): UserDto {
-        val p = context.getSharedPreferences("tinda_prefs", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences("tinda_prefs", Context.MODE_PRIVATE)
         return UserDto(
-            id        = null,
-            name      = p.getString("user_name",       null),
-            email     = p.getString("user_email",      null),
-            role      = p.getString("user_role",       null),
-            storeName = p.getString("user_store_name", null),
-            storeCode = p.getString("user_store_code", null)
+            id = null,
+            name = prefs.getString("user_name", null),
+            email = prefs.getString("user_email", null),
+            role = prefs.getString("user_role", null),
+            storeId = prefs.getLong("user_store_id", 0L).takeIf { it != 0L },
+            storeName = prefs.getString("user_store_name", null),
+            storeCode = prefs.getString("user_store_code", null),
+            phone = prefs.getString("user_phone", null),
+            address = prefs.getString("user_address", null),
+            avatarUrl = prefs.getString("user_avatar_url", null)
         )
     }
 
     fun clearSession(context: Context) {
         context.getSharedPreferences("tinda_prefs", Context.MODE_PRIVATE)
-            .edit().clear().apply()
+            .edit()
+            .clear()
+            .apply()
         token = null
     }
 
