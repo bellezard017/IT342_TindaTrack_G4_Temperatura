@@ -14,9 +14,12 @@ import java.util.Base64;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ActivityLogService activityLogService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       ActivityLogService activityLogService) {
         this.userRepository = userRepository;
+        this.activityLogService = activityLogService;
     }
 
     public AvatarResponse uploadAvatar(User user, MultipartFile file) {
@@ -48,7 +51,8 @@ public class UserService {
 
             // Update user
             user.setAvatarUrl(dataUrl);
-            userRepository.save(user);
+            User savedUser = userRepository.save(user);
+            logProfileActivity(savedUser, "Updated profile photo");
 
             AvatarResponse response = new AvatarResponse();
             response.setAvatarUrl(dataUrl);
@@ -61,7 +65,9 @@ public class UserService {
 
     public User removeAvatar(User user) {
         user.setAvatarUrl(null);
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        logProfileActivity(savedUser, "Removed profile photo");
+        return savedUser;
     }
 
     public User updateProfile(User user, ProfileUpdateRequest request) {
@@ -72,6 +78,22 @@ public class UserService {
             user.setAddress(request.getAddress());
         }
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        logProfileActivity(savedUser, "Updated profile information");
+        return savedUser;
+    }
+
+    private void logProfileActivity(User user, String label) {
+        if (user.getStoreId() == null) {
+            return;
+        }
+        activityLogService.log(
+                "profile",
+                label,
+                String.valueOf(user.getId()),
+                user.getName(),
+                null,
+                user.getStoreId()
+        );
     }
 }
