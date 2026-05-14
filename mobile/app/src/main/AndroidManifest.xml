@@ -5,9 +5,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_store"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_store"
         android:supportsRtl="true"
         android:theme="@style/Theme.TindaTrackMobile"
         android:usesCleartextTraffic="true">
@@ -21,6 +21,17 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="oauth"
+                    android:path="/callback"
+                    android:scheme="tindatrack" />
             </intent-filter>
         </activity>
 
@@ -45,6 +56,18 @@
         <!-- Main dashboard (cream bg) -->
         <activity
             android:name=".MainActivity"
+            android:theme="@style/Theme.TindaTrackMobile.Main" />
+
+        <activity
+            android:name=".SalesActivity"
+            android:theme="@style/Theme.TindaTrackMobile.Main" />
+
+        <activity
+            android:name=".StoreActivity"
+            android:theme="@style/Theme.TindaTrackMobile.Main" />
+
+        <activity
+            android:name=".ProfileActivity"
             android:theme="@style/Theme.TindaTrackMobile.Main" />
 
     </application>
