@@ -34,9 +34,7 @@ export default function SetupStaff() {
           const user = await authApi.getMe();
           localStorage.setItem('user', JSON.stringify(user));
         } catch {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          navigate('/login?error=oauth_user_load_failed', { replace: true });
+          setError('Session is still being prepared. Enter your store code to continue.');
         }
       }
     };
@@ -53,7 +51,11 @@ export default function SetupStaff() {
       localStorage.setItem('user', JSON.stringify(user));
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid store code. Please try again.');
+      setError(
+        err.response?.data?.error?.message ||
+        err.response?.data?.message ||
+        'Invalid store code. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
