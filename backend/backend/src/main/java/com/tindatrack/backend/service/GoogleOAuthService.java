@@ -36,17 +36,20 @@ public class GoogleOAuthService {
     private final JwtUtil jwtUtil;
     private final StoreService storeService;
     private final EmailService emailService;
+    private final ActivityLogService activityLogService;
     private final Gson gson;
     private final HttpClient httpClient;
 
     public GoogleOAuthService(UserRepository userRepository,
                                JwtUtil jwtUtil,
                                StoreService storeService,
-                               EmailService emailService) {
+                               EmailService emailService,
+                               ActivityLogService activityLogService) {
         this.userRepository = userRepository;
         this.jwtUtil        = jwtUtil;
         this.storeService   = storeService;
         this.emailService   = emailService;
+        this.activityLogService = activityLogService;
         this.gson           = new Gson();
         this.httpClient     = HttpClient.newHttpClient();
     }
@@ -155,6 +158,18 @@ public class GoogleOAuthService {
                     user.getRole()
             );
             System.out.println("[GoogleOAuth] New user created: " + email + " with role: " + user.getRole());
+            
+            // Log the authentication activity if user has a store
+            if (user.getStoreId() != null) {
+                activityLogService.log(
+                    "store",
+                    "Account created via Google OAuth",
+                    String.valueOf(user.getId()),
+                    user.getName(),
+                    null,
+                    user.getStoreId()
+                );
+            }
         } else {
             // Existing user - link Google ID if not already linked
             if (user.getGoogleId() == null) {
@@ -172,6 +187,45 @@ public class GoogleOAuthService {
             // Enrich store information for existing users
             storeService.enrichUserStore(user);
             System.out.println("[GoogleOAuth] Logged in existing user: " + email + " with role: " + user.getRole());
+            
+            // Log the login activity if user has a store
+            if (user.getStoreId() != null) {
+                activityLogService.log(
+                    "store",
+                    "Logged in via Google OAuth",
+                    String.valueOf(user.getId()),
+                    user.getName(),
+                    null,
+                    user.getStoreId()
+                );
+            }
+        }
+
+        String jwtToken = jwtUtil.generateToken(user.getEmail());
+        return new AuthResponse(jwtToken, user);
+    }
+
+    public AuthResponse authenticateDevelopmentGoogleUser(String intent) {
+        String role = "staff".equalsIgnoreCase(intent) ? "STAFF" : "OWNER";
+        String email = "google." + role.toLowerCase() + "@tindatrack.local";
+
+        User user = userRepository.findByEmailIgnoreCase(email).orElse(null);
+        if (user == null) {
+            user = new User();
+            user.setName("Google " + ("STAFF".equals(role) ? "Staff" : "Owner"));
+            user.setEmail(email);
+            user.setPassword("OAUTH_DEV_LOGIN");
+            user.setGoogleId("dev-google-" + role.toLowerCase());
+            user.setIsOAuthUser(true);
+            user.setRole(role);
+            user.setCreatedAt(LocalDateTime.now());
+            user = userRepository.save(user);
+        } else {
+            user.setGoogleId("dev-google-" + role.toLowerCase());
+            user.setIsOAuthUser(true);
+            user.setRole(role);
+            user = userRepository.save(user);
+            storeService.enrichUserStore(user);
         }
 
         String jwtToken = jwtUtil.generateToken(user.getEmail());
