@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
@@ -26,6 +27,8 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (handleOAuthCallback()) return
 
         // Already logged in? Skip straight to home
         if (!RetrofitClient.loadToken(this).isNullOrEmpty()) {
@@ -50,9 +53,34 @@ class LoginActivity : AppCompatActivity() {
         }
 
         btnGoogle.setOnClickListener {
-            val url = "${RetrofitClient.getBaseUrl()}auth/oauth/google/login"
+            val url = "${RetrofitClient.getBaseUrl()}auth/oauth/google/login?state=mobile"
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
         }
+    }
+
+    private fun handleOAuthCallback(): Boolean {
+        val data = intent?.data ?: return false
+        if (data.scheme != "tindatrack" || data.host != "oauth") return false
+
+        val token = data.getQueryParameter("token")
+        val error = data.getQueryParameter("error")
+        if (!error.isNullOrBlank()) {
+            Toast.makeText(this, "Google sign-in failed. Please try again.", Toast.LENGTH_LONG).show()
+            return false
+        }
+        if (token.isNullOrBlank()) return false
+
+        RetrofitClient.saveToken(this, token)
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.api.getMe()
+                response.body()?.let { RetrofitClient.saveUser(this@LoginActivity, it) }
+            } catch (_: Exception) {
+                // The saved token is still enough for MainActivity to retry /auth/me.
+            }
+            goToMain()
+        }
+        return true
     }
 
     private fun doLogin() {
