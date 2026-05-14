@@ -6,11 +6,15 @@ import com.tindatrack.backend.dto.SaleResponse;
 import com.tindatrack.backend.model.User;
 import com.tindatrack.backend.repository.UserRepository;
 import com.tindatrack.backend.features.stores.StoreService;
+import com.tindatrack.backend.service.ActivityLogService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,13 +25,16 @@ public class SaleController {
     private final SaleService saleService;
     private final UserRepository userRepository;
     private final StoreService storeService;
+    private final ActivityLogService activityLogService;
 
     public SaleController(SaleService saleService,
                           UserRepository userRepository,
-                          StoreService storeService) {
+                          StoreService storeService,
+                          ActivityLogService activityLogService) {
         this.saleService = saleService;
         this.userRepository = userRepository;
         this.storeService = storeService;
+        this.activityLogService = activityLogService;
     }
 
     @PostMapping("/sales")
@@ -102,11 +109,55 @@ public class SaleController {
         return ResponseEntity.ok(dashboard);
     }
 
+    @GetMapping("/sales/export")
+    public ResponseEntity<String> exportSales(Authentication authentication) {
+        User user = getAuthenticatedUser(authentication);
+        storeService.enrichUserStore(user);
+        List<Sale> sales = saleService.getSalesForStore(user.getStoreId());
+
+        activityLogService.log(
+                "export",
+                "Exported sales records",
+                String.valueOf(user.getId()),
+                user.getName(),
+                null,
+                user.getStoreId()
+        );
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"sales_export_" + LocalDate.now() + ".csv\"")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(buildSalesCsv(sales));
+    }
+
     private User getAuthenticatedUser(Authentication authentication) {
         if (authentication == null || authentication.getName() == null) {
             throw new RuntimeException("Unauthenticated request.");
         }
         return userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found."));
+    }
+
+    private String buildSalesCsv(List<Sale> sales) {
+        StringBuilder csv = new StringBuilder();
+        csv.append("Date,Item,Category,Quantity,Price,Total,Recorded By\n");
+        for (Sale sale : sales) {
+            csv.append(csvValue(sale.getSaleDate() == null ? "" : sale.getSaleDate().toString())).append(',')
+                    .append(csvValue(sale.getItemName())).append(',')
+                    .append(csvValue(sale.getCategory())).append(',')
+                    .append(sale.getQuantity() == null ? "" : sale.getQuantity()).append(',')
+                    .append(sale.getPrice() == null ? "" : sale.getPrice()).append(',')
+                    .append(sale.getTotalPrice() == null ? "" : sale.getTotalPrice()).append(',')
+                    .append(csvValue(sale.getCreatedBy())).append('\n');
+        }
+        return csv.toString();
+    }
+
+    private String csvValue(String value) {
+        if (value == null) {
+            return "";
+        }
+        return "\"" + value.replace("\"", "\"\"") + "\"";
     }
 }
