@@ -42,6 +42,10 @@ public class ActivityLogService {
         return repo.findTop20ByStoreIdOrderByCreatedAtDesc(storeId);
     }
 
+    public List<ActivityLog> getAllByStore(Long storeId) {
+        return repo.findByStoreIdOrderByCreatedAtDesc(storeId);
+    }
+
     public List<ActivityLog> getRecent() {
         return repo.findTop20ByOrderByCreatedAtDesc();
     }
