@@ -21,6 +21,13 @@ export const authApi = {
     window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/auth/oauth/google/login`;
   },
 
+  googleDevLogin: async (intent = 'owner') => {
+    const { data } = await axiosInstance.post(
+      `/auth/oauth/google/dev-login?intent=${encodeURIComponent(intent)}`
+    );
+    return data;
+  },
+
   // Upload profile picture — sends multipart/form-data, returns { avatarUrl }
   uploadAvatar: async (file) => {
     const formData = new FormData();
