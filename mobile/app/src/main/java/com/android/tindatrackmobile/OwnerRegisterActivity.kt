@@ -99,7 +99,7 @@ class OwnerRegisterActivity : AppCompatActivity() {
         }
 
         btnGoogle.setOnClickListener {
-            val url = "${RetrofitClient.getBaseUrl()}auth/oauth/google/login"
+            val url = "${RetrofitClient.getBaseUrl()}auth/oauth/google/login?state=mobile-owner"
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
         }
     }
