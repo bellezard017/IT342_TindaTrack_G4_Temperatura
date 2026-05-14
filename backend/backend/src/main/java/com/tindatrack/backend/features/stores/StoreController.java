@@ -40,6 +40,14 @@ public class StoreController {
 
         User user = storeService.setupStoreByEmail(
                 authentication.getName(), request.getStoreName());
+        activityLogService.log(
+                "store",
+                "Created store: " + user.getStoreName(),
+                String.valueOf(user.getId()),
+                user.getName(),
+                null,
+                user.getStoreId()
+        );
         return ResponseEntity.ok(user);
     }
 
@@ -53,6 +61,14 @@ public class StoreController {
 
         User user = storeService.joinStoreByEmail(
                 authentication.getName(), request.getStoreCode());
+        activityLogService.log(
+                "store",
+                "Joined store: " + user.getStoreName(),
+                String.valueOf(user.getId()),
+                user.getName(),
+                null,
+                user.getStoreId()
+        );
         return ResponseEntity.ok(user);
     }
 
@@ -87,6 +103,29 @@ public class StoreController {
         if (!"OWNER".equalsIgnoreCase(requester.getRole()))
             return ResponseEntity.status(403).body("Only store owners can remove members.");
 
+        User member = userRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("Store member not found."));
+
+        if (requester.getId().equals(member.getId())) {
+            return ResponseEntity.status(400).body("Store owners cannot remove themselves.");
+        }
+
+        if (member.getStoreId() == null || !member.getStoreId().equals(requester.getStoreId())) {
+            return ResponseEntity.status(404).body("Store member not found.");
+        }
+
+        activityLogService.log(
+                "delete",
+                "Removed staff: " + member.getName(),
+                String.valueOf(requester.getId()),
+                requester.getName(),
+                null,
+                requester.getStoreId()
+        );
+
+        member.setStoreId(null);
+        userRepository.save(member);
+
         return ResponseEntity.ok().build();
     }
 
@@ -101,7 +140,7 @@ public class StoreController {
         if (user.getStoreId() == null)
             return ResponseEntity.ok(List.of());
 
-        List<ActivityLog> logs = activityLogService.getRecentByStore(user.getStoreId());
+        List<ActivityLog> logs = activityLogService.getAllByStore(user.getStoreId());
         return ResponseEntity.ok(logs);
     }
 }
