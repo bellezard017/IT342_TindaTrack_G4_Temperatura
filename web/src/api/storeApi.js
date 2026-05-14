@@ -7,6 +7,11 @@ export const storeApi = {
     return response.data;
   },
 
+  getActivity: async () => {
+    const response = await axiosInstance.get('/store/activity');
+    return response.data;
+  },
+
   setupStore: async (storeName) => {
     const response = await axiosInstance.post('/store/setup', { storeName });
     return response.data;
