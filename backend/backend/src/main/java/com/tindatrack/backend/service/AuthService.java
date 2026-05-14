@@ -20,17 +20,20 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final StoreService storeService;
     private final EmailService emailService;
+    private final ActivityLogService activityLogService;
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        JwtUtil jwtUtil,
                        StoreService storeService,
-                       EmailService emailService) {
+                       EmailService emailService,
+                       ActivityLogService activityLogService) {
         this.userRepository  = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil         = jwtUtil;
         this.storeService    = storeService;
         this.emailService    = emailService;
+        this.activityLogService = activityLogService;
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -66,6 +69,7 @@ public class AuthService {
             savedUser.setStoreName(store.getName());
             savedUser.setStoreCode(store.getCode());
             savedUser = userRepository.save(savedUser);
+            logAuthActivity(savedUser, "Created store: " + savedUser.getStoreName());
         }
 
         if ("STAFF".equalsIgnoreCase(request.getRole())) {
@@ -75,6 +79,7 @@ public class AuthService {
             savedUser = storeService.joinStoreByEmail(
                     savedUser.getEmail(),
                     request.getStoreCode().trim().toUpperCase());
+            logAuthActivity(savedUser, "Joined store: " + savedUser.getStoreName());
         }
 
         emailService.sendWelcomeEmail(
@@ -112,5 +117,19 @@ public class AuthService {
 
     private String normalizeEmail(String email) {
         return email == null ? null : email.trim().toLowerCase();
+    }
+
+    private void logAuthActivity(User user, String label) {
+        if (user.getStoreId() == null) {
+            return;
+        }
+        activityLogService.log(
+                "store",
+                label,
+                String.valueOf(user.getId()),
+                user.getName(),
+                null,
+                user.getStoreId()
+        );
     }
 }  
