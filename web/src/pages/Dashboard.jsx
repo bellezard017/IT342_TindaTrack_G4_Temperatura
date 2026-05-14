@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from 'recharts';
 import { saleApi } from '../api/saleApi';
+import { authApi } from '../api/AuthApi';
 import SidebarLayout from '../components/SidebarLayout';
 import '../styles/dashboard.css';
 
@@ -37,6 +38,20 @@ export default function Dashboard() {
     const fetchDashboard = async () => {
       setLoading(true);
       try {
+        const user = await authApi.getMe();
+        localStorage.setItem('user', JSON.stringify(user));
+
+        const hasStore = user?.storeId && user.storeId !== 0;
+        const role = user?.role?.toUpperCase();
+        if (!hasStore && role === 'OWNER') {
+          navigate('/setup-store', { replace: true });
+          return;
+        }
+        if (!hasStore && role === 'STAFF') {
+          navigate('/setup-staff', { replace: true });
+          return;
+        }
+
         const data = await saleApi.getDashboard();
         setStats({
           todaySales: data.totalDailySales ?? 0,
@@ -57,7 +72,7 @@ export default function Dashboard() {
     };
 
     fetchDashboard();
-  }, []);
+  }, [navigate]);
 
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
