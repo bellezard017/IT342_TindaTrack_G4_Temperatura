@@ -73,7 +73,15 @@ class SalesActivity : AppCompatActivity() {
                     }
                 }
             } catch (_: Exception) {
-                Toast.makeText(this@SalesActivity, "Backend is unreachable.", Toast.LENGTH_LONG).show()
+                val sales = OfflineStore.getSales(this@SalesActivity)
+                if (sales.isEmpty()) {
+                    list.addView(emptyText("No offline sales yet. Add one from Home."))
+                } else {
+                    sales.forEach { sale ->
+                        list.addView(card("${sale.name ?: "Unnamed item"}\n${sale.category ?: "Uncategorized"}\n${sale.date ?: ""}\nQty: ${sale.quantity ?: 0} x ${money(sale.price)}", money(sale.total)))
+                    }
+                }
+                Toast.makeText(this@SalesActivity, "Showing offline sales.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -88,7 +96,7 @@ class SalesActivity : AppCompatActivity() {
                     Toast.makeText(this@SalesActivity, "Export failed.", Toast.LENGTH_SHORT).show()
                 }
             } catch (_: Exception) {
-                Toast.makeText(this@SalesActivity, "Backend is unreachable.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@SalesActivity, "Offline export is available from the Store tab.", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -95,7 +95,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             } catch (_: Exception) {
-                // Dashboard request below will show the network error if the backend is unreachable.
+                val saved = RetrofitClient.loadUser(this@MainActivity)
+                if (saved.storeId == null && !saved.role.isNullOrBlank()) {
+                    promptStoreSetup(saved)
+                    return@launch
+                }
             }
             loadDashboard()
         }
@@ -156,8 +160,10 @@ class MainActivity : AppCompatActivity() {
                     promptStoreSetup(user)
                 }
             } catch (_: Exception) {
-                Toast.makeText(this@MainActivity, "Backend is unreachable.", Toast.LENGTH_SHORT).show()
-                promptStoreSetup(user)
+                val updated = OfflineStore.setupStore(this@MainActivity, user, value)
+                RetrofitClient.saveUser(this@MainActivity, updated)
+                Toast.makeText(this@MainActivity, "Saved store setup offline.", Toast.LENGTH_SHORT).show()
+                loadDashboard()
             }
         }
     }
@@ -184,7 +190,15 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this@MainActivity, "Unable to load dashboard.", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(this@MainActivity, "Backend is unreachable. Check server and mobile base URL.", Toast.LENGTH_LONG).show()
+                val dashboard = OfflineStore.getDashboard(this@MainActivity)
+                tvTodaySales.text = money(dashboard.totalDailySales)
+                tvTransactions.text = (dashboard.transactionCount ?: 0).toString()
+                tvItemsSold.text = (dashboard.itemsSold ?: 0).toString()
+                salesAdapter.update(dashboard.recentSales.orEmpty().map { it.toSaleItem() })
+                topAdapter.update(dashboard.topItems.orEmpty().map { it.toTopSellingItem() })
+                lineChart.dataPoints = dashboard.chartData.orEmpty().map { (it.revenue ?: 0.0).toFloat() }
+                lineChart.labels = dashboard.chartData.orEmpty().map { it.date.orEmpty() }
+                Toast.makeText(this@MainActivity, "Showing offline dashboard.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -244,7 +258,9 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this@MainActivity, "Could not save sale.", Toast.LENGTH_SHORT).show()
                 }
             } catch (_: Exception) {
-                Toast.makeText(this@MainActivity, "Backend is unreachable.", Toast.LENGTH_SHORT).show()
+                OfflineStore.addSale(this@MainActivity, request)
+                Toast.makeText(this@MainActivity, "Sale recorded offline.", Toast.LENGTH_SHORT).show()
+                loadDashboard()
             }
         }
     }

@@ -80,7 +80,23 @@ class StoreActivity : AppCompatActivity() {
                     }
                 }
             } catch (_: Exception) {
-                Toast.makeText(this@StoreActivity, "Backend is unreachable.", Toast.LENGTH_LONG).show()
+                val user = RetrofitClient.loadUser(this@StoreActivity)
+                val team = OfflineStore.getTeam(this@StoreActivity)
+                val activity = OfflineStore.getActivity(this@StoreActivity)
+
+                content.addView(card("Store Information\nStore Name\n${user.storeName ?: "Not set"}\nStore Code\n${user.storeCode ?: "Not set"}\nOwner\n${team.firstOrNull { it.role.equals("OWNER", true) }?.name ?: user.name.orEmpty()}", ""))
+                content.addView(card("Staff Members", "${team.count { it.role.equals("STAFF", true) }} staff"))
+                content.addView(card("Total Members", team.size.toString()))
+                content.addView(sectionTitle("Activity History", "Offline activity saved on this device"))
+
+                if (activity.isEmpty()) {
+                    content.addView(emptyText("No offline activity yet."))
+                } else {
+                    activity.forEach {
+                        content.addView(card("${it.label ?: "Activity"}\nBy: ${it.userName ?: "Unknown"}\n${it.createdAt ?: ""}", it.type ?: ""))
+                    }
+                }
+                Toast.makeText(this@StoreActivity, "Showing offline store data.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -99,7 +115,10 @@ class StoreActivity : AppCompatActivity() {
                 file.writeBytes(body.bytes())
                 Toast.makeText(this@StoreActivity, "Export saved: ${file.name}", Toast.LENGTH_LONG).show()
             } catch (_: Exception) {
-                Toast.makeText(this@StoreActivity, "Backend is unreachable.", Toast.LENGTH_SHORT).show()
+                val dir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: filesDir
+                val file = File(dir, "tindatrack-sales-offline.csv")
+                file.writeBytes(OfflineStore.exportSalesCsv(this@StoreActivity))
+                Toast.makeText(this@StoreActivity, "Offline export saved: ${file.name}", Toast.LENGTH_LONG).show()
             }
         }
     }
