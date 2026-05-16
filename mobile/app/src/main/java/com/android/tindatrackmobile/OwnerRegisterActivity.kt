@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
@@ -89,8 +90,12 @@ class OwnerRegisterActivity : AppCompatActivity() {
                         tvError.visibility = View.VISIBLE
                     }
                 } catch (e: Exception) {
-                    tvError.text = "Network error. Is your backend running?"
-                    tvError.visibility = View.VISIBLE
+                    OfflineStore.createOwnerSession(this@OwnerRegisterActivity, name, email, storeName)
+                    Toast.makeText(this@OwnerRegisterActivity, "Backend unavailable. Created an offline account.", Toast.LENGTH_LONG).show()
+                    startActivity(
+                        Intent(this@OwnerRegisterActivity, MainActivity::class.java)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    )
                 } finally {
                     btnCreate.isEnabled = true
                     btnCreate.text = getString(R.string.create_store)

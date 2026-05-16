@@ -116,7 +116,9 @@ class LoginActivity : AppCompatActivity() {
                     showError(errMsg)
                 }
             } catch (e: Exception) {
-                showError("Network error. Please check your connection.")
+                OfflineStore.createLoginSession(this@LoginActivity, email)
+                Toast.makeText(this@LoginActivity, "Backend unavailable. Continuing in offline mode.", Toast.LENGTH_LONG).show()
+                goToMain()
             } finally {
                 setLoading(false)
             }
